@@ -7,3 +7,14 @@ router.get('/', function(req, res, next) {
 });
 
 module.exports = router;
+// get pagina de cadastro
+router.get('/cadastro', (req, res) => {
+  res.render('cadastro'); // busca cadastro.ejs dentro da pasta "views"
+});
+
+router.post('/cadastrar-usuario', (req, res) => {
+  const usuario = req.body;
+  console.log('Novo usuário:', usuario);
+  // Aqui você salva no banco, etc.
+  res.redirect('/compras');
+});

@@ -1,0 +1,88 @@
+@keyframes brilho-input {
+    0%, 100% { box-shadow: 0 0 5px #A4EA4F; }
+    50% { box-shadow: 0 0 12px #83E509; }
+  }
+  
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+    color: #2e2e2e;
+  }
+  
+  header {
+    background-color: #3A6604;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .logo img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .logo h1 {
+    font-size: 2rem;
+    color: #A4EA4F;
+  }
+  
+  main {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #3A6604;
+    margin-bottom: 25px;
+  }
+  
+  .form-cadastro {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  label {
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    padding: 12px;
+    border: 2px solid #A4EA4F;
+    border-radius: 12px;
+    background-color: #f8fff5;
+    font-size: 1rem;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  input:hover {
+    animation: brilho-input 1s infinite;
+  }
+  
+  button {
+    background-color: #65B307;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #3A6604;
+  }
+  
