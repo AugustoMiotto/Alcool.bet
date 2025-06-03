@@ -1,15 +1,22 @@
 var express = require('express');
 var router = express.Router();
-
+module.exports = router;
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+// GET PÁG LOGIN
+router.get('/login',function(req, res, next){
+  res.render('login');
+})
+// GET pág senha
+router.get('/esqueciSenha', function(req, res, next){
+  res.render('esqueciSenha');
+})
 
-module.exports = router;
 // get pagina de cadastro
 router.get('/cadastro', (req, res) => {
-  res.render('cadastro'); // busca cadastro.ejs dentro da pasta "views"
+  res.render('cadastro'); 
 });
 
 router.post('/cadastrar-usuario', (req, res) => {
