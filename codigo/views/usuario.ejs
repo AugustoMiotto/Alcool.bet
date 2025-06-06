@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta - CoffeeTech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styleheets/usuario.css">
+</head>
+<body class="text-amber-900">
+    <!-- Header -->
+    <header class="bg-amber-50 shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-amber-800">
+                <i class="fas fa-coffee mr-2"></i> CoffeeTech
+            </h1>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#" class="hover:text-amber-600">Início</a>
+                <a href="#" class="hover:text-amber-600">Produtos</a>
+                <a href="#" class="hover:text-amber-600">Ofertas</a>
+                <a href="#" class="font-bold text-amber-700">Minha Conta</a>
+                <a href="#" class="hover:text-amber-600"><i class="fas fa-shopping-cart"></i></a>
+            </nav>
+            <button class="md:hidden text-amber-800">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Sidebar -->
+            <aside class="w-full md:w-64 flex-shrink-0">
+                <div class="bg-amber-50 rounded-lg shadow-md p-4 sticky top-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 font-bold">
+                            <%= user.initials %>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="font-semibold"><%= user.name %></h3>
+                            <span class="text-xs text-amber-600"><%= user.email %></span>
+                        </div>
+                    </div>
+                    
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 bg-amber-100 rounded-md font-medium text-amber-800">
+                                <i class="fas fa-user mr-2"></i> Dados Pessoais
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 hover:bg-amber-100 rounded-md">
+                                <i class="fas fa-map-marker-alt mr-2"></i> Endereços
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 hover:bg-amber-100 rounded-md">
+                                <i class="fas fa-box-open mr-2"></i> Meus Pedidos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 hover:bg-amber-100 rounded-md">
+                                <i class="fas fa-heart mr-2"></i> Favoritos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 hover:bg-amber-100 rounded-md">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Sair
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="flex-1">
+                <!-- Welcome Message -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-amber-800 mb-2">Olá, <%= user.firstName %>!</h2>
+                    <p class="text-amber-600">Gerencie suas informações pessoais, endereços e pedidos.</p>
+                </div>
+
+                <!-- Personal Data Section -->
+                <section class="bg-amber-50 rounded-lg shadow-md p-6 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold text-amber-800">Dados Pessoais</h3>
+                        <button class="px-4 py-2 bg-amber-200 text-amber-800 rounded-md hover:bg-amber-300 transition">
+                            Salvar Alterações
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nome Completo</label>
+                            <input type="text" value="<%= user.name %>" class="w-full px-3 py-2 border border-amber-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-amber-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Telefone Celular</label>
+                            <input type="tel" value="<%= user.phone %>" class="w-full px-3 py-2 border border-amber-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-amber-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Gênero</label>
+                            <select class="w-full px-3 py-2 border border-amber-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-amber-300">
+                                <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Homem</option>
+                                <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>Mulher</option>
+                                <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Outro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">E-mail</label>
+                            <div class="flex">
+                                <input type="email" value="<%= user.email %>" readonly class="flex-1 px-3 py-2 border border-amber-200 rounded-l-md bg-amber-100">
+                                <button class="px-3 py-2 bg-amber-300 text-amber-800 rounded-r-md hover:bg-amber-400 transition">
+                                    Alterar
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">CPF</label>
+                            <input type="text" value="<%= user.cpf %>" readonly class="w-full px-3 py-2 border border-amber-200 rounded-md bg-amber-100">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Data de Nascimento</label>
+                            <input type="text" value="<%= user.birthDate %>" readonly class="w-full px-3 py-2 border border-amber-200 rounded-md bg-amber-100">
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center">
+                        <input type="checkbox" id="offers" <%= user.receiveOffers ? 'checked' : '' %> class="w-4 h-4 text-amber-600 rounded border-amber-300 focus:ring-amber-200">
+                        <label for="offers" class="ml-2 text-sm">Desejo receber ofertas e novidades por e-mail</label>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4 mt-6">
+                        <button class="px-4 py-2 bg-amber-200 text-amber-800 rounded-md hover:bg-amber-300 transition">
+                            Alterar Senha
+                        </button>
+                        <button class="px-4 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200 transition">
+                            Excluir Conta
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Address Section -->
+                <section class="bg-amber-50 rounded-lg shadow-md p-6 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold text-amber-800">Meu Endereço</h3>
+                        <button class="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition">
+                            Cadastrar novo endereço
+                        </button>
+                    </div>
+
+                    <% if (user.address) { %>
+                    <div class="border border-amber-200 rounded-lg p-4 bg-white">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-medium"><%= user.address.street %>, <%= user.address.number %></p>
+                                <p class="text-sm"><%= user.address.complement %></p>
+                                <p class="text-sm"><%= user.address.neighborhood %></p>
+                                <p class="text-sm"><%= user.address.city %> - <%= user.address.state %>, <%= user.address.zipCode %></p>
+                            </div>
+                            <button class="text-amber-600 hover:text-amber-800">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                        </div>
+                    </div>
+                    <% } else { %>
+                    <div class="text-center py-8">
+                        <i class="fas fa-map-marker-alt text-4xl text-amber-300 mb-2"></i>
+                        <p class="text-amber-600">Você ainda não cadastrou um endereço.</p>
+                        <button class="mt-4 px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition">
+                            Adicionar endereço
+                        </button>
+                    </div>
+                    <% } %>
+                </section>
+
+                <!-- Order History Section -->
+                <section class="bg-amber-50 rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-amber-800 mb-6">Histórico de Pedidos</h3>
+                    
+                    <% if (user.orders && user.orders.length > 0) { %>
+                        <div class="grid gap-4">
+                            <% user.orders.forEach(order => { %>
+                                <div class="order-card bg-white border border-amber-200 rounded-lg p-4 transition duration-300">
+                                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                                        <div>
+                                            <div class="flex items-center mb-2">
+                                                <p class="font-semibold mr-4">Pedido #<%= order.number %></p>
+                                                <% if (order.status === 'Entregue') { %>
+                                                    <span class="px-2 py-1 text-xs bg-emerald-100 text-emerald-800 rounded-full"><%= order.status %></span>
+                                                <% } else if (order.status === 'Em andamento') { %>
+                                                    <span class="px-2 py-1 text-xs bg-amber-100 text-amber-800 rounded-full"><%= order.status %></span>
+                                                <% } else if (order.status === 'Cancelado') { %>
+                                                    <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full"><%= order.status %></span>
+                                                <% } %>
+                                            </div>
+                                            <p class="text-sm text-amber-600"><%= order.date %></p>
+                                        </div>
+                                        <div class="mt-4 md:mt-0 flex items-center">
+                                            <p class="font-semibold mr-4">R$ <%= order.total.toFixed(2).replace('.', ',') %></p>
+                                            <button class="px-4 py-2 text-amber-100 bg-amber-800 rounded-md hover:bg-amber-900 transition">
+                                                Ver Detalhes
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-8">
+                            <i class="fas fa-box-open text-4xl text-amber-300 mb-2"></i>
+                            <p class="text-amber-600">Você ainda não realizou nenhum pedido.</p>
+                            <a href="#" class="mt-4 inline-block px-6 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition">
+                                Compre agora
+                            </a>
+                        </div>
+                    <% } %>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-amber-800 text-amber-50 py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-xl font-bold mb-4">CoffeeTech</h4>
+                    <p class="text-amber-100">A melhor experiência em tecnologia com um toque aconchegante.</p>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-3">Institucional</h5>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-amber-100 hover:text-white">Sobre nós</a></li>
+                        <li><a href="#" class="text-amber-100 hover:text-white">Trabalhe conosco</a></li>
+                        <li><a href="#" class="text-amber-100 hover:text-white">Política de privacidade</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-3">Atendimento</h5>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-2 text-sm"></i>
+                            <span class="text-amber-100">(11) 4002-8922</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-sm"></i>
+                            <span class="text-amber-100">contato@coffeetech.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-3">Redes Sociais</h5>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-amber-100 hover:text-white text-xl"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-amber-100 hover:text-white text-xl"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-amber-100 hover:text-white text-xl"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-amber-700 mt-8 pt-8 text-center text-amber-200 text-sm">
+                © 2023 CoffeeTech. Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

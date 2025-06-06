@@ -1,0 +1,14 @@
+ @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');   
+ body {
+font-family: 'Poppins', sans-serif;
+background-color: #f9f5f0;
+}
+.divider {
+height: 1px;
+background: linear-gradient(90deg, transparent, #d2b48c, transparent);
+}   
+.order-card:hover {
+transform: translateY(-3px);
+box-shadow: 0 10px 20px rgba(210, 180, 140, 0.2);
+}
+    

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= product.name %> - CoffeeTech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styleheets/produto.css">
+</head>
+<body class="text-amber-900">
+    <!-- Header -->
+    <%- include('partials/header') %>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Product Info Section -->
+        <section class="mb-12">
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Product Image -->
+                <div class="w-full md:w-1/2 bg-white rounded-lg shadow-md p-4 flex items-center justify-center">
+                    <img src="<%= product.image %>" alt="<%= product.name %>" class="max-h-[400px] object-contain">
+                </div>
+                
+                <!-- Product Details -->
+                <div class="w-full md:w-1/2">
+                    <h1 class="text-2xl md:text-3xl font-bold mb-2"><%= product.name %></h1>
+                    
+                    <div class="flex items-center mb-4">
+                        <div class="star-rating flex mr-2">
+                            <% for(let i=1; i<=5; i++) { %>
+                                <span class="star <%= i <= product.rating ? 'filled' : '' %>">★</span>
+                            <% } %>
+                        </div>
+                        <span class="text-amber-600 text-sm"><%= product.reviewCount %> avaliações</span>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <p class="text-3xl font-bold text-amber-800 mb-1">R$ <%= product.price.toFixed(2).replace('.',',') %></p>
+                        <p class="text-amber-600">ou <%= product.installments %>x de R$ <%= (product.price/product.installments).toFixed(2).replace('.',',') %></p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <p class="<%= product.stock > 0 ? 'text-emerald-600' : 'text-red-600' %> font-medium">
+                            <i class="fas <%= product.stock > 0 ? 'fa-check-circle' : 'fa-times-circle' %> mr-1"></i>
+                            <%= product.stock > 0 ? 'Disponível em estoque' : 'Produto esgotado' %>
+                        </p>
+                        <% if(product.stock > 0) { %>
+                            <p class="text-sm text-amber-600"><%= product.stock %> unidades disponíveis</p>
+                        <% } %>
+                    </div>
+                    
+                    <div class="flex items-center mb-6">
+                        <div class="mr-4">
+                            <label class="block text-sm font-medium mb-1">Quantidade</label>
+                            <div class="flex border border-amber-300 rounded-md">
+                                <button class="px-3 py-1 bg-amber-100 text-amber-800">-</button>
+                                <input type="number" value="1" min="1" max="<%= product.stock %>" class="w-12 text-center px-1 border-x border-amber-300">
+                                <button class="px-3 py-1 bg-amber-100 text-amber-800">+</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <button class="px-6 py-3 bg-amber-700 text-white rounded-md hover:bg-amber-800 transition font-medium">
+                                <i class="fas fa-shopping-cart mr-2"></i>Comprar agora
+                            </button>
+                            <button class="px-6 py-3 bg-amber-200 text-amber-800 rounded-md hover:bg-amber-300 transition font-medium">
+                                <i class="fas fa-plus mr-2"></i>Adicionar ao carrinho
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Product Details Section -->
+        <section class="mb-12">
+            <h2 class="text-xl font-bold mb-4 pb-2 border-b border-amber-200">Detalhes do Produto</h2>
+            
+            <!-- Description -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-3 text-amber-800">Descrição</h3>
+                <div class="prose max-w-none"><%= product.description %></div>
+            </div>
+            
+            <!-- Specifications -->
+            <div>
+                <h3 class="text-lg font-semibold mb-3 text-amber-800">Especificações Técnicas</h3>
+                <table class="w-full border-collapse">
+                    <% product.specifications.forEach(spec => { %>
+                        <tr class="border-b border-amber-100">
+                            <td class="py-3 px-2 font-medium bg-amber-50"><%= spec.name %></td>
+                            <td class="py-3 px-2"><%= spec.value %></td>
+                        </tr>
+                    <% }); %>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Related Products -->
+        <section class="mb-12">
+            <h2 class="text-xl font-bold mb-6 pb-2 border-b border-amber-200">Você também pode gostar</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <% relatedProducts.forEach(prod => { %>
+                    <div class="product-card bg-white rounded-lg shadow-md p-4 transition duration-300">
+                        <a href="/produto/<%= prod.id %>">
+                            <img src="<%= prod.image %>" alt="<%= prod.name %>" class="w-full h-40 object-contain mb-3">
+                            <h3 class="font-medium text-sm mb-1 line-clamp-2"><%= prod.name %></h3>
+                            <p class="text-amber-800 font-bold">R$ <%= prod.price.toFixed(2).replace('.',',') %></p>
+                            <p class="text-xs text-amber-600">ou <%= prod.installments %>x de R$ <%= (prod.price/prod.installments).toFixed(2).replace('.',',') %></p>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+        </section>
+        
+        <!-- Reviews Section -->
+        <section>
+            <h2 class="text-xl font-bold mb-4 pb-2 border-b border-amber-200">Avaliações do Produto</h2>
+            
+            <div class="bg-amber-50 rounded-lg p-6 mb-8">
+                <div class="flex flex-col md:flex-row md:items-center mb-6">
+                    <div class="mr-8 mb-4 md:mb-0">
+                        <span class="text-4xl font-bold"><%= product.ratingAverage.toFixed(1) %></span>
+                        <span class="text-amber-600">de 5</span>
+                    </div>
+                    <div>
+                        <div class="star-rating flex text-2xl mb-1">
+                            <% for(let i=1; i<=5; i++) { %>
+                                <span class="star <%= i <= Math.round(product.ratingAverage) ? 'filled' : '' %>">★</span>
+                            <% } %>
+                        </div>
+                        <p class="text-sm text-amber-600"><%= product.reviewCount %> avaliações</p>
+                    </div>
+                </div>
+                
+                <!-- Existing Reviews -->
+                <div class="space-y-6">
+                    <% product.reviews.forEach(review => { %>
+                        <div class="border-b border-amber-100 pb-4 last:border-0">
+                            <div class="flex items-center mb-2">
+                                <div class="w-8 h-8 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 font-bold text-sm mr-2">
+                                    <%= review.userInitials %>
+                                </div>
+                                <h4 class="font-medium"><%= review.userName %></h4>
+                            </div>
+                            <div class="star-rating flex mb-1">
+                                <% for(let i=1; i<=5; i++) { %>
+                                    <span class="star <%= i <= review.rating ? 'filled' : '' %>">★</span>
+                                <% } %>
+                            </div>
+                            <p class="text-sm text-amber-900 mb-1"><%= review.text %></p>
+                            <p class="text-xs text-amber-500"><%= review.date %></p>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+            
+            <!-- New Review Form -->
+            <div class="bg-amber-50 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Deixe sua avaliação</h3>
+                <form>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Sua nota</label>
+                        <div class="star-rating flex">
+                            <% for(let i=1; i<=5; i++) { %>
+                                <button type="button" class="star hover:filled mr-1 text-2xl" data-rating="<%= i %>">★</button>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="review-text" class="block text-sm font-medium mb-2">Seu comentário</label>
+                        <textarea id="review-text" rows="4" class="w-full px-3 py-2 border border-amber-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-amber-300"></textarea>
+                    </div>
+                    <button type="submit" class="px-6 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition font-medium">
+                        Enviar avaliação
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <%- include('partials/footer') %>
+</body>
+</html>

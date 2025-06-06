@@ -25,3 +25,13 @@ router.post('/cadastrar-usuario', (req, res) => {
   // Aqui você salva no banco, etc.
   res.redirect('/compras');
 });
+
+// get pág usuario 
+router.get('/usuario', function(req, res, next){
+  res.render('usuario');
+});
+
+// get pag produtos
+router.get('/produto', function(req, res, next){
+  res.render('produto');
+});
