@@ -100,14 +100,8 @@
                             <label class="block text-sm font-medium mb-1">Telefone Celular</label>
                             <input type="tel" value="<%= user.phone %>" class="w-full px-3 py-2 border border-amber-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-amber-300">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Gênero</label>
-                            <select class="w-full px-3 py-2 border border-amber-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-amber-300">
-                                <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Homem</option>
-                                <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>Mulher</option>
-                                <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Outro</option>
-                            </select>
-                        </div>
+
+                            
                         <div>
                             <label class="block text-sm font-medium mb-1">E-mail</label>
                             <div class="flex">
