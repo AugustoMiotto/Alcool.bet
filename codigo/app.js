@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session = require('express-session');
 
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/index');
@@ -18,9 +19,16 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// --- CONFIGURAÇÃO DA SESSÃO ---
+app.use(session({
+  secret: 'mandioca', 
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Em produção com HTTPS, mude para true
+}));
 
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
@@ -28,6 +36,9 @@ app.use('/cadastro',cadastroRouter);
 app.use('/esqueciSenha', senhaRouter);
 app.use('/usuario', usuarioRouter);
 app.use('/usuario', produtoRouter);
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

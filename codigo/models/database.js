@@ -3,7 +3,7 @@ const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize('alcool_bet', 'root', '1234', {
   host: 'localhost',
   dialect: 'mysql',
-  logging: false // define como true para ver os logs SQL
+  logging: true // define como true para ver os logs SQL
 });
 
 async function testarConexao() {

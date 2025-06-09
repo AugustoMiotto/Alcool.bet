@@ -10,6 +10,13 @@
     <div class="login-box">
       <img src="/imagens/logo.png" alt="Logo da Álcool.bet" class="login-logo">
       <h1 class="login-title">Álcool.bet</h1>
+
+      <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+        <div class="alert-error" style="color: red; background-color: #ffebee; border: 1px solid red; padding: 10px; margin-bottom: 15px; border-radius: 5px; text-align: center;">
+            <%= errorMessage %>
+        </div>
+      <% } %>
+
       <form action="/login" method="POST">
         <input type="email" name="email" placeholder="E-mail" required>
         <input type="password" name="senha" placeholder="Senha" required>

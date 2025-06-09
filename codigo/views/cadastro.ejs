@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cadastro - alcool.bet</title>
-<link rel="stylesheet" href="/stylesheets/cadastro.css" />
-
+  <link rel="stylesheet" href="/stylesheets/cadastro.css" />
 </head>
 <body>
   <header>
@@ -18,9 +17,14 @@
   <main>
     <h2>Crie sua conta</h2>
 
-    <!-- action aponta para rota backend -->
-    <form class="form-cadastro" id="cadastroForm" method="POST" action="/cadastrar-usuario">
+    <%# Bloco para exibir mensagens de erro, se houver %>
+    <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+        <div class="alert-error" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <%= errorMessage %>
+        </div>
+    <% } %>
 
+    <form class="form-cadastro" id="cadastroForm" method="POST" action="/cadastrar-usuario">
       <label for="nome">Nome completo</label>
       <input type="text" id="nome" name="nome" required />
 
@@ -36,17 +40,10 @@
       <label for="senha">Senha</label>
       <input type="password" id="senha" name="senha" required />
 
+      <label for="confirmarSenha">Confirmar Senha</label>
+      <input type="password" id="confirmarSenha" name="confirmarSenha" required />
       <button type="submit">Cadastrar</button>
     </form>
   </main>
-
-  <!-- Esse script é só para testes: REMOVER EM PRODUÇÃO -->
-  <script>
-    const form = document.getElementById('cadastroForm');
-    form.addEventListener('submit', (e) => {
-      e.preventDefault(); // REMOVER depois
-      window.location.href = '/compras'; // Backend real deve redirecionar
-    });
-  </script>
 </body>
 </html>

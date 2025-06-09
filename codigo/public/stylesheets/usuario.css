@@ -1,14 +1,91 @@
- @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');   
- body {
-font-family: 'Poppins', sans-serif;
-background-color: #f9f5f0;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  color: #333;
 }
-.divider {
-height: 1px;
-background: linear-gradient(90deg, transparent, #d2b48c, transparent);
-}   
-.order-card:hover {
-transform: translateY(-3px);
-box-shadow: 0 10px 20px rgba(210, 180, 140, 0.2);
+
+.main-usuario {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
 }
-    
+
+.usuario {
+  background-color: #fff;
+  max-width: 600px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.usuario__cabecalho {
+  text-align: center;
+  padding: 30px 20px 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.usuario__icone {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 15px;
+  background-color: #007BFF;
+  color: white;
+  font-size: 36px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.usuario__nome {
+  font-size: 24px;
+  margin: 0;
+}
+
+.usuario__email {
+  font-size: 16px;
+  color: #666;
+}
+
+.usuario__conteudo {
+  padding: 25px 20px;
+}
+
+.usuario__card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.usuario__card h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 8px;
+}
+
+.usuario__lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.usuario__lista li {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed #ddd;
+  padding-bottom: 6px;
+}
+
+.usuario__lista-label {
+  font-weight: bold;
+  color: #444;
+}
+
+.usuario__lista-valor {
+  color: #555;
+}
