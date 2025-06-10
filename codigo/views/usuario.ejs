@@ -1,45 +1,95 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Perfil do Usuário</title>
-  <link rel="stylesheet" href="/stylesheets/usuario.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - Alcool.bet</title>
+   <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="stylesheets/usuario.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
-<body>
-  <main class="main-usuario">
-    <section class="usuario">
-      <div class="usuario__cabecalho">
-        <div class="usuario__icone">
-          <span><%= user.nome[0] %></span>
+<body class="bg-beige-50">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="mb-8">
+            
+            <h1 class="text-3xl font-semibold text-gray-800">Bem-vindo, <%= usuario.nome.split(' ')[0] %>!</h1>
+            <p class="text-gray-600">Gerencie suas informações pessoais, endereços e pedidos</p>
+        </header>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-xl font-medium text-gray-800 mb-4 border-l-4 border-orange-500 pl-3">Informações Pessoais</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">Nome</label>
+                            <input type="text" value="<%= usuario.nome %>" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-400 text-gray-800 bg-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">E-mail</label>
+                            <input type="email" value="<%= usuario.email %>" readonly 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none bg-gray-100 text-gray-500 cursor-not-allowed">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">CPF</label>
+                            <input type="text" value="<%= usuario.cpf %>" readonly 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none bg-gray-100 text-gray-500 cursor-not-allowed">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">Data de Nascimento</label>
+                            <input type="text" value="<%= new Date(usuario.data_nasc).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) %>" readonly 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none bg-gray-100 text-gray-500 cursor-not-allowed">
+                        </div>
+                    </div>
+                    
+                    <div class="lg:col-span-2 space-y-8">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="mt-6 flex flex-wrap gap-4 items-center">
+            
+            <a href="/logout" class="px-4 py-2 bg-zinc-500 text-white rounded-md hover:bg-zinc-600 transition-colors">Sair da Conta</a>
+            
+            <button class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600">Alterar Senha</button>
+            <button class="px-4 py-2 text-red-600 hover:text-red-800">Excluir Conta</button>
+            <button class="px-4 py-2 bg-gray-700 text-white rounded-md ml-auto hover:bg-gray-800">Salvar Alterações</button>
         </div>
-        <h1 class="usuario__nome"><%= user.nome %></h1>
-        <p class="usuario__email"><%= user.email %></p>
-      </div>
+    </div>
+</div>
+                    
+                </div>
+            </div>
+            
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-xl font-medium text-gray-800 mb-4 border-l-4 border-orange-500 pl-3">Histórico de Pedidos</h2>
+                    <div class="border-t border-gray-200 pt-4">
 
-      <div class="usuario__conteudo">
-        <div class="usuario__card">
-          <h2>Dados Pessoais</h2>
-          <ul class="usuario__lista">
-            <li>
-              <span class="usuario__lista-label">Nome:</span>
-              <span class="usuario__lista-valor"><%= user.nome %></span>
-            </li>
-            <li>
-              <span class="usuario__lista-label">CPF:</span>
-              <span class="usuario__lista-valor"><%= user.cpf %></span>
-            </li>
-            <li>
-              <span class="usuario__lista-label">Data de Nascimento:</span>
-              <span class="usuario__lista-valor"><%= new Date(user.data_nasc).toLocaleDateString('pt-BR') %></span>
-            </li>
-            <li>
-              <span class="usuario__lista-label">E-mail:</span>
-              <span class="usuario__lista-valor"><%= user.email %></span>
-            </li>
-          </ul>
+                        <% if (pedidos && pedidos.length > 0) { %>
+                            <% pedidos.forEach(pedido => { %>
+                                <div class="border border-gray-200 rounded-lg p-4 mb-3">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-semibold text-gray-700">Pedido #<%= pedido.id %></span>
+                                        <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800"><%= pedido.status %></span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-500"><%= new Date(pedido.data).toLocaleDateString('pt-BR') %></span>
+                                        <a href="/pedidos/<%= pedido.id %>" class="text-sm px-3 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Detalhes</a>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="text-center py-8 text-gray-500">
+                                <p>Você ainda não fez nenhum pedido.</p>
+                            </div>
+                        <% } %>
+                        </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </section>
-  </main>
+    </div>
 </body>
 </html>

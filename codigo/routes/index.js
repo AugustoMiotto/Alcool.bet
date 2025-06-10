@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 const sequelize = require('../models/database');
-const Usuario = require('../models/Usuario');
-const { Op } = require("sequelize"); // <-- IMPORTAR O 'Op'
+const { Usuario, Admin } = require('../models/index'); 
+
+const { Op } = require("sequelize"); 
 const bcrypt = require('bcrypt'); 
 
 sequelize.sync({ force: false }).then(() => {
@@ -13,9 +14,39 @@ sequelize.sync({ force: false }).then(() => {
 
 module.exports = router;
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', async function(req, res, next) {
+  try {
+    // Quando você tiver o modelo 'Produto', a linha real será esta:
+    // const todosOsProdutos = await Produto.findAll();
+
+    // Por enquanto, vamos usar dados de exemplo para o design funcionar:
+    const todosOsProdutos = [
+        {id: 1, nome: 'Cerveja Original 600ml', preco: '9.49', imagem: 'https://zaffari.vtexassets.com/arquivos/ids/251374/1017734-00.jpg?v=638560578016300000'},
+        {id: 2, nome: 'Vinho Tinto Seco Pérgola 750 ml', preco: '24.90', imagem: 'https://www.vinicolacampestre.com.br/wp-content/uploads/2022/08/Bordo-Seco-750ml.png'},
+        {id: 3, nome: 'Whisky Jack Daniel\'s', preco: '137.90', imagem: 'https://m.media-amazon.com/images/I/71osj33akML._AC_SX522_.jpg'}
+        // ... e assim por diante
+    ];
+
+    res.render('index', { 
+      pageStyles: 'home', // Para carregar o seu home.css
+      produtos: todosOsProdutos 
+    });
+
+  } catch (err) {
+    console.error("Erro ao buscar produtos para a homepage:", err);
+    next(err); // Passa o erro para o error handler do Express
+  }
 });
+
+const isAdmin = (req, res, next) => {
+  // A condição agora é muito mais simples
+  if (req.session.userId && req.session.isAdmin === true) {
+    return next(); // Permite o acesso
+  }
+  
+  // Nega o acesso para todos os outros
+  res.status(403).send('Acesso negado. Você não tem permissão para acessar esta página.');
+};
 
 // GET PÁG LOGIN
 router.get('/login',function(req, res, next){
@@ -26,28 +57,29 @@ router.get('/login',function(req, res, next){
 router.post('/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
-
-    // 1. Encontrar o usuário pelo e-mail no banco de dados
     const user = await Usuario.findOne({ where: { email: email } });
 
-    // 2. Se o usuário não for encontrado, retorna para a tela de login com erro
     if (!user) {
       return res.render('login', { errorMessage: 'E-mail ou senha inválidos.' });
     }
 
-    // 3. Compara a senha enviada com a senha criptografada (hash) no banco
     const passwordMatch = await bcrypt.compare(senha, user.senha);
 
-    // 4. Se as senhas não baterem, retorna para a tela de login com erro
     if (!passwordMatch) {
       return res.render('login', { errorMessage: 'E-mail ou senha inválidos.' });
     }
 
-    // 5. SE TUDO ESTIVER CORRETO: Login bem-sucedido!
-    // Guardamos o ID do usuário na sessão. É isso que o mantém "logado".
+    // --- LÓGICA DE ADMIN ATUALIZADA ---
+    // 1. Verificamos se existe um registro na tabela Admin com o id do usuário
+    const adminRecord = await Admin.findByPk(user.id);
+
+    // 2. Guardamos o ID na sessão
     req.session.userId = user.id;
 
-    // 6. Redireciona o usuário para sua página de perfil (ou outra página, como /compras)
+    // 3. Guardamos um booleano (true/false) na sessão indicando se é admin
+    req.session.isAdmin = !!adminRecord; // '!!' converte o resultado (objeto ou null) para um booleano
+
+    // Redireciona para a página do usuário
     res.redirect(`/usuario/${user.id}`);
 
   } catch (error) {
@@ -61,9 +93,10 @@ router.get('/esqueciSenha', function(req, res, next){
   res.render('esqueciSenha');
 })
 
-// get pagina de cadastro
 router.get('/cadastro', (req, res) => {
-  res.render('cadastro'); 
+  res.render('cadastro', { 
+    errorMessage: null 
+  }); 
 });
 
 // Rota POST para cadastrar o usuário (com confirmação de senha)
@@ -120,31 +153,72 @@ router.post('/cadastrar-usuario', async (req, res) => {
 });
 
 // get pág usuario 
-router.get('/usuario/:id', async function(req, res) {
+router.get('/usuario/:id', async (req, res) => {
   try {
-    // 1. Pega o ID que veio na URL (ex: /usuario/1, id será "1")
     const userId = req.params.id;
+    
+    // Busca o usuário
+    const usuario = await Usuario.findByPk(userId);
 
-    // 2. Busca UM usuário no banco com esse ID
-    const usuarioEncontrado = await Usuario.findByPk(userId);
+    // Busca os pedidos daquele usuário (exemplo)
+    // NOTA: Você precisará de um modelo 'Pedido' e uma associação
+    const pedidos = []; 
 
-    // 3. Verifica se o usuário foi realmente encontrado
-    if (usuarioEncontrado) {
-      // 4. Renderiza a página 'usuario' e passa o objeto encontrado
-      //    com o nome de "user", que é o que o EJS espera.
-      res.render('usuario', { user: usuarioEncontrado });
-    } else {
-      // Se não encontrar, envia uma página de erro 404
-      res.status(404).send('Usuário não encontrado');
+    if (!usuario) {
+      return res.status(404).send('Usuário não encontrado');
     }
 
+    // Passa ambos os objetos para a view
+    res.render('usuario', { 
+        usuario: usuario,
+        pedidos: pedidos
+    });
+
   } catch (err) {
-    console.error('Erro ao buscar usuário:', err);
-    res.status(500).send('Erro ao carregar a página do usuário');
+    console.error('Erro ao buscar perfil do usuário:', err);
+    res.status(500).send('Erro ao carregar a página.');
   }
 });
+
+router.get('/logout', (req, res, next) => {
+  // O método destroy() é fornecido pelo express-session para limpar a sessão
+  req.session.destroy(err => {
+    if (err) {
+      // Se houver um erro ao destruir a sessão, loga e passa para o error handler
+      console.error('Erro ao destruir a sessão:', err);
+      return next(err);
+    }
+    
+    //limpa o cookie de sessão do navegador
+
+    res.clearCookie('connect.sid'); 
+    
+    // Redireciona o usuário para a página principal após o logout
+    res.redirect('/');
+  });
+});
+
 
 // get pag produtos
 router.get('/produto', function(req, res, next){
   res.render('produto');
+});
+
+
+
+// post rastrear pedidos
+router.post('/pedidos/rastrear', async (req, res) => {
+  try {
+    const codigoPedido = req.body.codigo_pedido;
+
+    // AINDA NÃO TEMOS O MODELO 'PEDIDO', ENTÃO É UMA SIMULAÇÃO
+    console.log(`Buscando pedido com o código: ${codigoPedido}`);
+
+
+    res.send(`Página para exibir os detalhes do pedido ${codigoPedido}. Rota a ser implementada!`);
+
+  } catch (err) {
+    console.error("Erro ao rastrear pedido:", err);
+    res.status(500).send("Erro interno ao tentar rastrear o pedido.");
+  }
 });
