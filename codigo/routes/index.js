@@ -16,7 +16,7 @@ module.exports = router;
 /* GET home page. */
 router.get('/', async function(req, res, next) {
   try {
-    // Quando você tiver o modelo 'Produto', a linha real será esta:
+    // Quando tiver o modelo 'Produto', a linha real será esta:
     // const todosOsProdutos = await Produto.findAll();
 
     // Por enquanto, vamos usar dados de exemplo para o design funcionar:
@@ -39,9 +39,8 @@ router.get('/', async function(req, res, next) {
 });
 
 const isAdmin = (req, res, next) => {
-  // A condição agora é muito mais simples
   if (req.session.userId && req.session.isAdmin === true) {
-    return next(); // Permite o acesso
+    return next(); 
   }
   
   // Nega o acesso para todos os outros
@@ -69,17 +68,12 @@ router.post('/login', async (req, res) => {
       return res.render('login', { errorMessage: 'E-mail ou senha inválidos.' });
     }
 
-    // --- LÓGICA DE ADMIN ATUALIZADA ---
-    // 1. Verificamos se existe um registro na tabela Admin com o id do usuário
     const adminRecord = await Admin.findByPk(user.id);
 
-    // 2. Guardamos o ID na sessão
     req.session.userId = user.id;
 
-    // 3. Guardamos um booleano (true/false) na sessão indicando se é admin
-    req.session.isAdmin = !!adminRecord; // '!!' converte o resultado (objeto ou null) para um booleano
+    req.session.isAdmin = !!adminRecord; 
 
-    // Redireciona para a página do usuário
     res.redirect(`/usuario/${user.id}`);
 
   } catch (error) {
@@ -87,6 +81,7 @@ router.post('/login', async (req, res) => {
     res.status(500).send('Ocorreu um erro interno no servidor.');
   }
 });
+
 
 // GET pág senha
 router.get('/esqueciSenha', function(req, res, next){
@@ -99,25 +94,19 @@ router.get('/cadastro', (req, res) => {
   }); 
 });
 
-// Rota POST para cadastrar o usuário (com confirmação de senha)
+// Rota POST para cadastrar o usuário 
 router.post('/cadastrar-usuario', async (req, res) => {
   try {
-    // 1. Capturar todos os dados do formulário, incluindo o novo campo
     const { nome, cpf, data_nasc, email, senha, confirmarSenha } = req.body;
 
-    // 2. NOVA VALIDAÇÃO: Verificar se as senhas coincidem
     if (senha !== confirmarSenha) {
-      // Se não coincidirem, renderiza a pág de cadastro novamente com uma msg de erro
       return res.render('cadastro', { errorMessage: 'As senhas não conferem. Por favor, tente novamente.' });
     }
 
-    // O restante da validação continua igual...
-    // 3. Validação de campos obrigatórios
     if (!nome || !cpf || !email || !senha) {
       return res.render('cadastro', { errorMessage: 'Todos os campos obrigatórios devem ser preenchidos.' });
     }
     
-    // 4. Verificar se o CPF ou E-mail já existem no banco
     const usuarioExistente = await Usuario.findOne({
       where: {
         [Op.or]: [{ email: email }, { cpf: cpf }]
@@ -128,11 +117,9 @@ router.post('/cadastrar-usuario', async (req, res) => {
       return res.render('cadastro', { errorMessage: 'E-mail ou CPF já cadastrado.' });
     }
 
-    // 5. Criptografar (hash) a senha antes de salvar
     const saltRounds = 10;
     const senhaHash = await bcrypt.hash(senha, saltRounds);
 
-    // 6. Criar o novo usuário no banco de dados
     await Usuario.create({
       nome,
       cpf,
@@ -143,7 +130,6 @@ router.post('/cadastrar-usuario', async (req, res) => {
 
     console.log(`Usuário ${nome} (${email}) cadastrado com sucesso!`);
 
-    // 7. Redirecionar para a página de login após o sucesso
     res.redirect('/login');
 
   } catch (err) {
@@ -180,20 +166,16 @@ router.get('/usuario/:id', async (req, res) => {
   }
 });
 
+// GET LOGOUT
 router.get('/logout', (req, res, next) => {
-  // O método destroy() é fornecido pelo express-session para limpar a sessão
   req.session.destroy(err => {
     if (err) {
-      // Se houver um erro ao destruir a sessão, loga e passa para o error handler
       console.error('Erro ao destruir a sessão:', err);
       return next(err);
     }
     
-    //limpa o cookie de sessão do navegador
-
     res.clearCookie('connect.sid'); 
     
-    // Redireciona o usuário para a página principal após o logout
     res.redirect('/');
   });
 });
@@ -203,7 +185,6 @@ router.get('/logout', (req, res, next) => {
 router.get('/produto', function(req, res, next){
   res.render('produto');
 });
-
 
 
 // post rastrear pedidos
@@ -221,4 +202,36 @@ router.post('/pedidos/rastrear', async (req, res) => {
     console.error("Erro ao rastrear pedido:", err);
     res.status(500).send("Erro interno ao tentar rastrear o pedido.");
   }
+});
+
+router.get('/carrinho', function(req, res, next) {
+  // Vamos buscar os itens do carrinho da sessão do usuário.
+  // Se não houver carrinho, usamos uma lista vazia.
+  const carrinho = req.session.carrinho || [];
+
+  // --- CÁLCULO DOS TOTAIS ---
+  let subtotal = 0;
+  if (carrinho.length > 0) {
+    // Usamos o método 'reduce' para somar o (preço * quantidade) de cada item.
+    subtotal = carrinho.reduce((total, produto) => {
+      return total + (produto.preco * produto.quantidade);
+    }, 0);
+  }
+
+  // Supondo frete grátis por enquanto
+  const frete = 0;
+  const total = subtotal + frete;
+  // --- FIM DO CÁLCULO ---
+
+  // Renderizamos a página, passando os itens e os totais já calculados.
+  res.render('carrinho', {
+    carrinho: carrinho,
+    subtotal: subtotal,
+    total: total,
+    frete: frete
+  });
+});
+
+router.get('/admin/cadastro-produto', isAdmin, (req, res) => {
+    res.render('admin/cadastro-produto'); // Renderiza o arquivo EJS que criamos
 });

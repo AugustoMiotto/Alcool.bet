@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho de Compras - Alcool.bet</title>
+    <link rel="stylesheet" href="/stylesheets/carrinho.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Seu Carrinho de Compras</h1>
+        
+        <%# Se o carrinho tiver itens, mostra a tabela e o resumo %>
+        <% if (carrinho && carrinho.length > 0) { %>
+            <div class="cart-container">
+                <div class="cart-items">
+                    <% carrinho.forEach(produto => { %>
+                        <div class="cart-item">
+                            <img src="<%= produto.imagem %>" alt="<%= produto.nome %>" class="item-image">
+                            
+                            <div class="item-details">
+                                <div class="item-name"><%= produto.nome %></div>
+                                <div class="item-price">R$ <%= produto.preco.toFixed(2).replace('.', ',') %></div>
+                            </div>
+                            
+                            <div class="item-quantity">
+                                <label for="quantidade-<%= produto.id %>">Qtd:</label>
+                                <input type="number" id="quantidade-<%= produto.id %>" min="1" value="<%= produto.quantidade %>" data-id="<%= produto.id %>">
+                            </div>
+                            
+                            <div class="item-subtotal">
+                                R$ <%= (produto.preco * produto.quantidade).toFixed(2).replace('.', ',') %>
+                            </div>
+                            
+                            <button class="remove-btn" data-id="<%= produto.id %>">Remover</button>
+                        </div>
+                    <% }); %>
+                </div>
+                
+                <div class="cart-summary">
+                    <h3 class="summary-title">Resumo do Pedido</h3>
+                    
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <%# Usa a variável 'subtotal' que veio da rota %>
+                        <span>R$ <%= subtotal.toFixed(2).replace('.', ',') %></span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Frete</span>
+                        <span><%= frete === 0 ? 'Grátis' : `R$ ${frete.toFixed(2).replace('.', ',')}` %></span>
+                    </div>
+                    
+                    <div class="summary-row summary-total">
+                        <span>Total</span>
+                        <%# Usa a variável 'total' que veio da rota %>
+                        <span>R$ <%= total.toFixed(2).replace('.', ',') %></span>
+                    </div>
+                    
+                    <a href="/checkout" class="btn btn-primary">Finalizar Compra</a>
+                    <a href="/" class="btn btn-secondary">Continuar Comprando</a>
+                </div>
+            </div>
+        <%# Se o carrinho estiver vazio, mostra a mensagem %>
+        <% } else { %>
+            <div class="empty-cart">
+                <h2>Seu carrinho está vazio</h2>
+                <p>Parece que você ainda não adicionou nenhum item.</p>
+                <a href="/" class="btn btn-primary" style="max-width: 250px; margin: 20px auto;">Voltar às compras</a>
+            </div>
+        <% } %>
+    </main>
+
+
+</body>
+</html>
