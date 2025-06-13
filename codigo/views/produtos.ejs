@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos - Álcool.bet</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; }
+        .card-img-top { height: 220px; object-fit: cover; }
+        .card { margin-bottom: 30px; }
+        .container { margin-top: 40px; }
+        .row { gap: 24px 0; } /* Adiciona gap vertical entre as linhas */
+        .col-md-4 { margin-bottom: 24px; } /* Adiciona gap entre os cards */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4 text-center">Nossos Produtos</h1>
+        <div class="row">
+            <% if (produtos && produtos.length > 0) { %>
+                <% produtos.forEach(function(produto, idx) { %>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <img src="<%= produto.imagem && produto.imagem.startsWith('http') ? produto.imagem : '/imagens/banner.png' %>" class="card-img-top" alt="<%= produto.nome %>">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title"><%= produto.nome %></h5>
+                                <p class="card-text"><%= produto.descricao || 'Sem descrição.' %></p>
+                                <p class="card-text fw-bold">R$ <%= Number(produto.preco).toFixed(2) %></p>
+                                <a href="#" class="btn btn-primary mt-auto">Adicionar ao Carrinho</a>
+                            </div>
+                        </div>
+                    </div>
+                    <% if ((idx + 1) % 3 === 0) { %>
+                        </div><div class="row">
+                    <% } %>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12">
+                    <div class="alert alert-info text-center">Nenhum produto cadastrado ainda.</div>
+                </div>
+            <% } %>
+        </div>
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-secondary">Voltar para Home</a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

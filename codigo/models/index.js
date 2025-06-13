@@ -15,6 +15,7 @@ fs
       file.indexOf('.') !== 0 &&           // Ignora arquivos ocultos
       file !== basename &&                 // Ignora o próprio index.js
       file !== 'database.js' &&            // <-- A SOLUÇÃO! Ignora o arquivo do banco
+      file !== 'seed-produtos.js' &&       // Ignora o arquivo de seed
       file.slice(-3) === '.js' &&
       file.indexOf('.test.js') === -1
     );

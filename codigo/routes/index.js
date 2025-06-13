@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const sequelize = require('../models/database');
-const { Usuario, Admin } = require('../models/index'); 
+const { Usuario, Admin, Produto } = require('../models/index'); 
 
 const { Op } = require("sequelize"); 
 const bcrypt = require('bcrypt'); 
@@ -186,7 +186,6 @@ router.get('/produto', function(req, res, next){
   res.render('produto');
 });
 
-
 // post rastrear pedidos
 router.post('/pedidos/rastrear', async (req, res) => {
   try {
@@ -232,6 +231,30 @@ router.get('/carrinho', function(req, res, next) {
   });
 });
 
+
+// Rota para adicionar um produto ao carrinho - Fabricio
 router.get('/admin/cadastro-produto', isAdmin, (req, res) => {
-    res.render('admin/cadastro-produto'); // Renderiza o arquivo EJS que criamos
+  res.render('admin/cadastro-produto', { errorMessage: null, successMessage: null });
+});
+
+router.post('/admin/cadastro-produto', isAdmin, async (req, res) => {
+  try {
+    const { nome, preco, imagem, descricao, categoria } = req.body;
+    if (!nome || !preco) {
+      return res.render('admin/cadastro-produto', { errorMessage: 'Nome e preço são obrigatórios.', successMessage: null });
+    }
+    await Produto.create({ nome, preco, imagem, descricao, categoria });
+    res.render('admin/cadastro-produto', { errorMessage: null, successMessage: 'Produto cadastrado com sucesso!' });
+  } catch (err) {
+    res.render('admin/cadastro-produto', { errorMessage: 'Erro ao cadastrar produto.', successMessage: null });
+  }
+});
+
+router.get('/produtos', async (req, res) => {
+  try {
+    const produtos = await Produto.findAll();
+    res.render('produtos', { produtos });
+  } catch (err) {
+    res.render('produtos', { produtos: [] });
+  }
 });
