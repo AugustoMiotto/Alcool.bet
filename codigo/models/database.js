@@ -1,20 +1,15 @@
+
+require('dotenv').config();
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize('alcool_bet', 'root', '1234', {
-  host: 'localhost',
-  dialect: 'mysql',
-  logging: true // define como true para ver os logs SQL
-});
-
-async function testarConexao() {
-  try {
-    await sequelize.authenticate();
-    console.log('Conexão com o banco de dados bem-sucedida!');
-  } catch (error) {
-    console.error('Erro ao conectar com o banco de dados:', error);
+const sequelize = new Sequelize(
+  process.env.DB_NAME,    
+  process.env.DB_USER,    
+  process.env.DB_PASS,    
+  {
+    host: process.env.DB_HOST, 
+    dialect: process.env.DB_DIALECT 
   }
-}
-
-testarConexao();
+);
 
 module.exports = sequelize;

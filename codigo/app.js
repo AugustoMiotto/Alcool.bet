@@ -1,5 +1,5 @@
-// app.js (versão final com sessão persistente)
 
+require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -32,7 +32,7 @@ const sessionStore = new SequelizeStore({
 
 //CONFIGURAÇÃO DA SESSÃO
 app.use(session({
-  secret: 'matarootatuu', 
+  secret: process.env.SESSION_SECRET,
   store: sessionStore,   
   resave: false,
   saveUninitialized: false,

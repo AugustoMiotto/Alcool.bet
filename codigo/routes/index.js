@@ -13,22 +13,16 @@ sequelize.sync({ force: false }).then(() => {
 });
 
 module.exports = router;
+
 /* GET home page. */
 router.get('/', async function(req, res, next) {
   try {
-    // Quando tiver o modelo 'Produto', a linha real será esta:
-    // const todosOsProdutos = await Produto.findAll();
-
-    // Por enquanto, vamos usar dados de exemplo para o design funcionar:
-    const todosOsProdutos = [
-        {id: 1, nome: 'Cerveja Original 600ml', preco: '9.49', imagem: 'https://zaffari.vtexassets.com/arquivos/ids/251374/1017734-00.jpg?v=638560578016300000'},
-        {id: 2, nome: 'Vinho Tinto Seco Pérgola 750 ml', preco: '24.90', imagem: 'https://www.vinicolacampestre.com.br/wp-content/uploads/2022/08/Bordo-Seco-750ml.png'},
-        {id: 3, nome: 'Whisky Jack Daniel\'s', preco: '137.90', imagem: 'https://m.media-amazon.com/images/I/71osj33akML._AC_SX522_.jpg'}
-        // ... e assim por diante
-    ];
+    const todosOsProdutos = await Produto.findAll();
+    
+    console.log(todosOsProdutos);
 
     res.render('index', { 
-      pageStyles: 'home', // Para carregar o seu home.css
+      pageStyles: 'home', 
       produtos: todosOsProdutos 
     });
 
@@ -88,6 +82,7 @@ router.get('/esqueciSenha', function(req, res, next){
   res.render('esqueciSenha');
 })
 
+//GET CADASTRO
 router.get('/cadastro', (req, res) => {
   res.render('cadastro', { 
     errorMessage: null 
@@ -154,7 +149,7 @@ router.get('/usuario/:id', async (req, res) => {
       return res.status(404).send('Usuário não encontrado');
     }
 
-    // Passa ambos os objetos para a view
+    
     res.render('usuario', { 
         usuario: usuario,
         pedidos: pedidos
@@ -180,11 +175,6 @@ router.get('/logout', (req, res, next) => {
   });
 });
 
-
-// get pag produtos
-router.get('/produto', function(req, res, next){
-  res.render('produto');
-});
 
 // post rastrear pedidos
 router.post('/pedidos/rastrear', async (req, res) => {
@@ -237,19 +227,35 @@ router.get('/admin/cadastro-produto', isAdmin, (req, res) => {
   res.render('admin/cadastro-produto', { errorMessage: null, successMessage: null });
 });
 
-router.post('/admin/cadastro-produto', isAdmin, async (req, res) => {
+
+// ROTA CADASTRAR PRODUTO
+router.post('/admin/cadastro-produto', isAdmin, async (req, res, next) => {
   try {
     const { nome, preco, imagem, descricao, categoria } = req.body;
-    if (!nome || !preco) {
-      return res.render('admin/cadastro-produto', { errorMessage: 'Nome e preço são obrigatórios.', successMessage: null });
+
+    if (!nome || !preco || !imagem) {
+      return res.render('admin/cadastro-produto', { 
+        errorMessage: 'Nome, preço e link da imagem são obrigatórios.' 
+      });
     }
-    await Produto.create({ nome, preco, imagem, descricao, categoria });
-    res.render('admin/cadastro-produto', { errorMessage: null, successMessage: 'Produto cadastrado com sucesso!' });
+
+    await Produto.create({ 
+      nome, 
+      preco, 
+      imagem, 
+      descricao, 
+      categoria 
+    });
+
+    res.redirect('/');
+
   } catch (err) {
-    res.render('admin/cadastro-produto', { errorMessage: 'Erro ao cadastrar produto.', successMessage: null });
+    console.error("Erro ao cadastrar produto:", err);
+    return next(err);
   }
 });
 
+// ROTA PRODUTOS
 router.get('/produtos', async (req, res) => {
   try {
     const produtos = await Produto.findAll();
