@@ -12,10 +12,10 @@ fs
   .readdirSync(__dirname)
   .filter(file => {
     return (
-      file.indexOf('.') !== 0 &&           // Ignora arquivos ocultos
-      file !== basename &&                 // Ignora o próprio index.js
-      file !== 'database.js' &&            // <-- A SOLUÇÃO! Ignora o arquivo do banco
-      file !== 'seed-produtos.js' &&       // Ignora o arquivo de seed
+      file.indexOf('.') !== 0 &&           
+      file !== basename &&                
+      file !== 'database.js' &&            
+      file !== 'seed-produtos.js' &&       
       file.slice(-3) === '.js' &&
       file.indexOf('.test.js') === -1
     );
@@ -37,5 +37,6 @@ db.Admin.belongsTo(db.Usuario, { foreignKey: 'id' });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
 
 module.exports = db;

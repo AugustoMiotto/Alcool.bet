@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Recuperar Senha - Álcool.bet</title>
+  <link rel="stylesheet" href="/stylesheets/login.css">
+</head>
+<body>
+  <main class="login-container">
+    <div class="login-box">
+      <img src="/imagens/logo.png" alt="Logo da Álcool.bet" class="login-logo">
+      <h1 class="login-title">Recuperar Senha</h1>
+      <p style="font-size: 0.9em; color: #555; margin-bottom: 20px;">
+        Digite seu e-mail e enviaremos um link para você redefinir sua senha.
+      </p>
+
+      <% if (typeof message !== 'undefined' && message) { %>
+        <div class="alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <%= message %>
+        </div>
+      <% } %>
+
+      <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+        <div class="alert-error" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <%= errorMessage %>
+        </div>
+      <% } %>
+
+      <form action="/esqueci-senha" method="POST">
+        <input type="email" name="email" placeholder="Digite seu e-mail" required>
+        <button type="submit" class="btn">Enviar Link de Recuperação</button>
+      </form>
+
+      <div class="login-links">
+        <a href="/login">Voltar para o Login</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

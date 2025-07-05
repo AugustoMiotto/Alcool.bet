@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const sequelize = require('../models/database');
 const { Usuario, Admin, Produto } = require('../models/index'); 
+const crypto = require('crypto');
 
 const { Op } = require("sequelize"); 
 const bcrypt = require('bcrypt'); 
@@ -13,6 +14,9 @@ sequelize.sync({ force: false }).then(() => {
 });
 
 module.exports = router;
+
+
+// ----- ROTAS GET -----
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
@@ -32,6 +36,7 @@ router.get('/', async function(req, res, next) {
   }
 });
 
+// Controle de acesso a páginas restritas antes do login
 const isAdmin = (req, res, next) => {
   if (req.session.userId && req.session.isAdmin === true) {
     return next(); 
@@ -68,7 +73,7 @@ router.post('/login', async (req, res) => {
 
     req.session.isAdmin = !!adminRecord; 
 
-    res.redirect(`/usuario/${user.id}`);
+    res.redirect('/');
 
   } catch (error) {
     console.error('Erro no login:', error);
@@ -78,8 +83,8 @@ router.post('/login', async (req, res) => {
 
 
 // GET pág senha
-router.get('/esqueciSenha', function(req, res, next){
-  res.render('esqueciSenha');
+router.get('/esqueci-senha', function(req, res, next){
+  res.render('esqueci-senha');
 })
 
 //GET CADASTRO
@@ -88,6 +93,86 @@ router.get('/cadastro', (req, res) => {
     errorMessage: null 
   }); 
 });
+
+// get pág usuario 
+router.get('/usuario/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    // Busca o usuário
+    const usuario = await Usuario.findByPk(userId);
+
+    // Busca os pedidos daquele usuário (exemplo)
+    // NOTA: Você precisará de um modelo 'Pedido' e uma associação
+    const pedidos = []; 
+
+    if (!usuario) {
+      return res.status(404).send('Usuário não encontrado');
+    }
+
+    
+    res.render('usuario', { 
+        usuario: usuario,
+        pedidos: pedidos
+    });
+
+  } catch (err) {
+    console.error('Erro ao buscar perfil do usuário:', err);
+    res.status(500).send('Erro ao carregar a página.');
+  }
+});
+
+// Rota para EXIBIR o formulário de redefinição de senha
+router.get('/redefinir-senha/:token', async (req, res, next) => {
+  try {
+    const usuario = await Usuario.findOne({
+      where: {
+        resetPasswordToken: req.params.token,
+        resetPasswordExpires: { [Op.gt]: Date.now() } // Verifica se o token não expirou
+      }
+    });
+
+    if (!usuario) {
+      return res.send('Token para redefinição de senha é inválido ou expirou.');
+    }
+
+    res.render('redefinir-senha');
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Rota para adicionar um produto ao carrinho - Fabricio
+router.get('/admin/cadastro-produto', isAdmin, (req, res) => {
+  res.render('admin/cadastro-produto', { errorMessage: null, successMessage: null });
+});
+
+// ROTA PRODUTOS
+router.get('/produtos', async (req, res) => {
+  try {
+    const produtos = await Produto.findAll();
+    res.render('produtos', { produtos });
+  } catch (err) {
+    res.render('produtos', { produtos: [] });
+  }
+});
+
+// GET LOGOUT
+router.get('/logout', (req, res, next) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error('Erro ao destruir a sessão:', err);
+      return next(err);
+    }
+    
+    res.clearCookie('connect.sid'); 
+    
+    res.redirect('/');
+  });
+});
+
+
+// ----- ROTAS POST -----
 
 // Rota POST para cadastrar o usuário 
 router.post('/cadastrar-usuario', async (req, res) => {
@@ -131,48 +216,6 @@ router.post('/cadastrar-usuario', async (req, res) => {
     console.error('Erro no processo de cadastro:', err);
     res.render('cadastro', { errorMessage: 'Ocorreu um erro inesperado. Por favor, tente novamente.' });
   }
-});
-
-// get pág usuario 
-router.get('/usuario/:id', async (req, res) => {
-  try {
-    const userId = req.params.id;
-    
-    // Busca o usuário
-    const usuario = await Usuario.findByPk(userId);
-
-    // Busca os pedidos daquele usuário (exemplo)
-    // NOTA: Você precisará de um modelo 'Pedido' e uma associação
-    const pedidos = []; 
-
-    if (!usuario) {
-      return res.status(404).send('Usuário não encontrado');
-    }
-
-    
-    res.render('usuario', { 
-        usuario: usuario,
-        pedidos: pedidos
-    });
-
-  } catch (err) {
-    console.error('Erro ao buscar perfil do usuário:', err);
-    res.status(500).send('Erro ao carregar a página.');
-  }
-});
-
-// GET LOGOUT
-router.get('/logout', (req, res, next) => {
-  req.session.destroy(err => {
-    if (err) {
-      console.error('Erro ao destruir a sessão:', err);
-      return next(err);
-    }
-    
-    res.clearCookie('connect.sid'); 
-    
-    res.redirect('/');
-  });
 });
 
 
@@ -221,13 +264,6 @@ router.get('/carrinho', function(req, res, next) {
   });
 });
 
-
-// Rota para adicionar um produto ao carrinho - Fabricio
-router.get('/admin/cadastro-produto', isAdmin, (req, res) => {
-  res.render('admin/cadastro-produto', { errorMessage: null, successMessage: null });
-});
-
-
 // ROTA CADASTRAR PRODUTO
 router.post('/admin/cadastro-produto', isAdmin, async (req, res, next) => {
   try {
@@ -255,12 +291,84 @@ router.post('/admin/cadastro-produto', isAdmin, async (req, res, next) => {
   }
 });
 
-// ROTA PRODUTOS
-router.get('/produtos', async (req, res) => {
+
+// ROTA POST Esqueci Senha
+router.post('/esqueci-senha', async (req, res, next) => {
   try {
-    const produtos = await Produto.findAll();
-    res.render('produtos', { produtos });
+    const { email } = req.body;
+    const usuario = await Usuario.findOne({ where: { email } });
+
+    if (!usuario) {
+      // Mesmo se não encontrar o usuário, mostramos uma mensagem de sucesso
+      // para não informar a um atacante se um e-mail existe ou não.
+      return res.render('esqueci-senha', {
+        message: 'Se um usuário com este e-mail existir em nosso sistema, um link de recuperação foi enviado.'
+      });
+    }
+
+    // 1. Gerar um token seguro
+    const token = crypto.randomBytes(20).toString('hex');
+
+    // 2. Definir uma data de validade (ex: 1 hora a partir de agora)
+    const expires = new Date(Date.now() + 3600000); // 1 hora em milissegundos
+
+    // 3. Salvar o token e a data de validade no registro do usuário
+    await usuario.update({
+      resetPasswordToken: token,
+      resetPasswordExpires: expires
+    });
+
+    // 4. (SIMULAÇÃO DE E-MAIL) Criar o link de redefinição
+    const resetLink = `http://${req.headers.host}/redefinir-senha/${token}`;
+
+    // 5. Exibir o link no console
+    console.log('-----------------------------------');
+    console.log('LINK PARA REDEFINIR SENHA (COPIE E COLE NO NAVEGADOR):');
+    console.log(resetLink);
+    console.log('-----------------------------------');
+
+    res.render('esqueci-senha', {
+      message: 'Se um usuário com este e-mail existir em nosso sistema, um link de recuperação foi enviado.'
+    });
+
   } catch (err) {
-    res.render('produtos', { produtos: [] });
+    next(err);
+  }
+});
+
+
+// Rota para PROCESSAR a nova senha
+router.post('/redefinir-senha/:token', async (req, res, next) => {
+  try {
+    const usuario = await Usuario.findOne({
+      where: {
+        resetPasswordToken: req.params.token,
+        resetPasswordExpires: { [Op.gt]: Date.now() }
+      }
+    });
+
+    if (!usuario) {
+      return res.send('Token para redefinição de senha é inválido ou expirou.');
+    }
+
+    if (req.body.senha !== req.body.confirmarSenha) {
+      return res.send('As senhas não coincidem.');
+    }
+
+    // Criptografa a nova senha
+    const senhaHash = await bcrypt.hash(req.body.senha, 10);
+
+    // Atualiza a senha e limpa os campos de token
+    await usuario.update({
+      senha: senhaHash,
+      resetPasswordToken: null,
+      resetPasswordExpires: null
+    });
+
+    // Redireciona para o login com uma mensagem de sucesso
+    res.redirect('/login'); // Você pode adicionar uma mensagem de sucesso aqui se quiser
+
+  } catch (err) {
+    next(err);
   }
 });
