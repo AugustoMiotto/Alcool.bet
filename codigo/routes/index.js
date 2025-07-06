@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const sequelize = require('../models/database');
-const { Usuario, Admin, Produto } = require('../models/index'); 
+const { Usuario, Admin, Produto, Pedido } = require('../models/index'); 
 const crypto = require('crypto');
 
 const { Op } = require("sequelize"); 
@@ -102,14 +102,15 @@ router.get('/usuario/:id', async (req, res) => {
     // Busca o usuário
     const usuario = await Usuario.findByPk(userId);
 
-    // Busca os pedidos daquele usuário (exemplo)
-    // NOTA: Você precisará de um modelo 'Pedido' e uma associação
-    const pedidos = []; 
-
     if (!usuario) {
       return res.status(404).send('Usuário não encontrado');
     }
 
+    // Busca os pedidos do usuário
+    const pedidos = await Pedido.findAll({
+      where: { usuario_id: userId },
+      order: [['data', 'DESC']]
+    });
     
     res.render('usuario', { 
         usuario: usuario,
@@ -119,6 +120,34 @@ router.get('/usuario/:id', async (req, res) => {
   } catch (err) {
     console.error('Erro ao buscar perfil do usuário:', err);
     res.status(500).send('Erro ao carregar a página.');
+  }
+});
+
+// Rota GET para exibir página com detalhes do pedido X
+router.get('/pedidos/:id', async (req, res) => {
+  try {
+    const pedidoId = req.params.id;
+
+    const pedido = await Pedido.findByPk(pedidoId, {
+      include: {
+        model: Usuario,
+        as: 'usuario'
+      }
+    });
+
+    if (!pedido) {
+      return res.status(404).send('Pedido não encontrado.');
+    }
+
+    // Se quiser garantir que o pedido é do usuário logado
+    if (req.session.userId && pedido.usuario_id != req.session.userId) {
+      return res.status(403).send('Você não tem permissão para ver este pedido.');
+    }
+
+    res.render('pedido', { pedido }); // Crie uma view chamada detalhesPedido.ejs
+  } catch (err) {
+    console.error('Erro ao buscar detalhes do pedido:', err);
+    res.status(500).send('Erro interno do servidor.');
   }
 });
 
@@ -183,8 +212,23 @@ router.post('/cadastrar-usuario', async (req, res) => {
       return res.render('cadastro', { errorMessage: 'As senhas não conferem. Por favor, tente novamente.' });
     }
 
-    if (!nome || !cpf || !email || !senha) {
+    if (!nome || !cpf || !email || !senha || !data_nasc) {
       return res.render('cadastro', { errorMessage: 'Todos os campos obrigatórios devem ser preenchidos.' });
+    }
+    const aniversario = new Date(data_nasc);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - aniversario.getFullYear();
+    const difmes = hoje.getMonth() - aniversario.getMonth();
+
+    if (aniversario > hoje) {
+      return res.render('cadastro', { errorMessage: 'Data de nascimento incoerente!' });
+    }
+    if(difmes < 0 || (difmes === 0 && hoje.getDate() < aniversario.getDate())) {
+      idade--;
+    }
+
+    if (idade <18) {
+      return res.render('cadastro', { errorMessage: 'Você precisa ter 18 anos ou mais para se cadastrar.' });
     }
     
     const usuarioExistente = await Usuario.findOne({
@@ -218,21 +262,76 @@ router.post('/cadastrar-usuario', async (req, res) => {
   }
 });
 
-
-// post rastrear pedidos
-router.post('/pedidos/rastrear', async (req, res) => {
+// Rota POST para EXCLUIR USUARIO
+router.post('/usuario/:id/excluir', async (req, res) => {
   try {
-    const codigoPedido = req.body.codigo_pedido;
+    const { id } = req.params;
 
-    // AINDA NÃO TEMOS O MODELO 'PEDIDO', ENTÃO É UMA SIMULAÇÃO
-    console.log(`Buscando pedido com o código: ${codigoPedido}`);
+    // Confirma qual é o usuário.
+    if (req.session.userId != id) {
+      return res.status(403).send('Ação não permitida.');
+    }
 
+    await Usuario.destroy({ where: { id } });
 
-    res.send(`Página para exibir os detalhes do pedido ${codigoPedido}. Rota a ser implementada!`);
+    req.session.destroy(() => {
+      return res.redirect('/');
+    });
 
   } catch (err) {
-    console.error("Erro ao rastrear pedido:", err);
-    res.status(500).send("Erro interno ao tentar rastrear o pedido.");
+    console.error('Erro ao excluir conta:', err);
+
+    if (res.headersSent) return;
+
+    res.status(500).render('usuario', { errorMessage: 'Erro ao excluir a conta. Tente novamente.' });
+  }
+});
+
+//Rota POST para editar dados do perfil do usuário
+router.post('/usuario/:id/editar', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nome } = req.body;
+
+    // Verifica qual o user
+    if (parseInt(req.session.userId) !== parseInt(id)) {
+      return res.status(403).send('Ação não permitida.');
+    }
+
+    if (!nome || nome.trim() === '') {
+      const usuario = await Usuario.findByPk(id);
+      const pedidos = await Pedido.findAll({ where: { usuario_id: id } });
+      return res.render('usuario', {
+        usuario,
+        pedidos,
+        errorMessage: 'O nome não pode estar vazio.'
+      });
+    }
+
+    await Usuario.update({ nome }, { where: { id } });
+
+    console.log(`Usuário ${id} teve o nome alterado para "${nome}"`);
+
+    // Recarrega a página com os dados atualizados
+    const usuarioAtualizado = await Usuario.findByPk(id);
+    const pedidos = await Pedido.findAll({ where: { usuario_id: id } });
+
+    console.log(`Usuário ${id} teve o nome alterado para "${nome}"`);
+    res.render('usuario', {
+      usuario: usuarioAtualizado,
+      pedidos,
+      successMessage: 'Nome atualizado com sucesso!'
+    });
+
+  } catch (err) {
+    console.error('Erro ao editar nome do usuário:', err);
+    const usuario = await Usuario.findByPk(req.params.id);
+    const pedidos = await Pedido.findAll({ where: { usuario_id: req.params.id } });
+    res.status(500).render('usuario', {
+      usuario,
+      pedidos,
+      errorMessage: 'Erro ao salvar alterações. Tente novamente.'
+    });
   }
 });
 

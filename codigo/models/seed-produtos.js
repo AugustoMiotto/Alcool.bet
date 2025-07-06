@@ -64,6 +64,13 @@ async function seedProdutos() {
       imagem: 'https://down-br.img.susercontent.com/file/br-11134207-7r98o-luqlsdike6w0a2',
       descricao: 'Gin clássico, ideal para gin tônica.',
       categoria: 'Gin'
+    },
+    {
+      nome: 'CHEVROLET MONZA GLS 2.0 EFI 4P 1996',
+      preco: 21.900,
+      imagem: 'https://down-br.img.susercontent.com/file/br-11134207-7r98o-luqlsdike6w0a2',
+      descricao: 'Monza GLS 2.0 EFI 1996. Placa A; Direção hidráulica; Vidros elétricos nas 4 portas; Rodas de liga leve; Documento ok.',
+      categoria: 'Destilado'
     }
   ];
 

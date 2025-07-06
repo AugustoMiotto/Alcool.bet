@@ -35,6 +35,10 @@ Object.keys(db).forEach(modelName => {
 db.Usuario.hasOne(db.Admin, { foreignKey: 'id' });
 db.Admin.belongsTo(db.Usuario, { foreignKey: 'id' });
 
+// Relacionamento com pedidos
+db.Usuario.hasMany(db.Pedido, { foreignKey: 'usuario_id' });
+db.Pedido.belongsTo(db.Usuario, { foreignKey: 'usuario_id' });
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

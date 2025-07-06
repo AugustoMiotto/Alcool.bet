@@ -26,7 +26,7 @@
                 <a href="/carrinho" class="nav-btn">Carrinho</a>
                 
                 <% if (locals.isLoggedIn) { %>
-                    <a href="/pedidos" class="nav-btn">Meus Pedidos</a>
+                    <a href="/pedidos/<%= locals.userId %>" class="nav-btn">Meus Pedidos</a>
                     <% if (locals.isAdmin) { %>
                         <a href="/admin/dashboard" class="nav-btn admin-link">Painel Admin</a>
                     <% } %>

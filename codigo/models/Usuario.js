@@ -19,7 +19,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     },
-    data_nasc: DataTypes.DATE,
+    data_nasc: {
+    type: DataTypes.DATEONLY,
+    allowNull: false
+    },
     email: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -44,5 +47,11 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false
   });
 
+  Usuario.associate = (models) => {
+    Usuario.hasMany(models.Pedido, {
+      foreignKey: 'usuario_id',
+      as: 'pedidos'
+    });
+  };
   return Usuario;
 };
