@@ -24,10 +24,18 @@
                             </div>
                             
                             <div class="item-quantity">
-                                <label for="quantidade-<%= produto.id %>">Qtd:</label>
-                                <input type="number" id="quantidade-<%= produto.id %>" min="1" value="<%= produto.quantidade %>" data-id="<%= produto.id %>">
+                                <button class="btn-minus" type="button" data-id="<%= produto.id %>">-</button>
+                                <input 
+                                    type="number" 
+                                    class="input-quantidade"
+                                    value="<%= produto.quantidade %>" 
+                                    min="1" 
+                                    max="<%= produto.estoqueDisponivel %>" <%# --- MUDANÇA AQUI --- %>
+                                    data-id="<%= produto.id %>"
+                                >
+                                <button class="btn-plus" type="button" data-id="<%= produto.id %>">+</button>
                             </div>
-                            
+                                                        
                             <div class="item-subtotal">
                                 R$ <%= (produto.preco * produto.quantidade).toFixed(2).replace('.', ',') %>
                             </div>
@@ -71,31 +79,29 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Seleciona todos os botões de remover e inputs de quantidade
-    const botoesRemover = document.querySelectorAll('.remove-btn');
-    const inputsQuantidade = document.querySelectorAll('.item-quantity input');
+    // Seleciona todos os grupos de quantidade
+    const todosOsItens = document.querySelectorAll('.cart-item');
 
-    // Adiciona o evento de clique para cada botão de REMOVER
-    botoesRemover.forEach(botao => {
-        botao.addEventListener('click', async (e) => {
-            const produtoId = e.target.dataset.id;
-            
-            // Envia a requisição para a rota de remoção
-            const response = await fetch(`/carrinho/remover/${produtoId}`, { method: 'POST' });
-            const data = await response.json();
+    todosOsItens.forEach(item => {
+        const input = item.querySelector('.input-quantidade');
+        const btnPlus = item.querySelector('.btn-plus');
+        const btnMinus = item.querySelector('.btn-minus');
+        const maxEstoque = parseInt(input.max, 10);
 
-            if (data.success) {
-                // Remove o elemento do item do carrinho da tela
-                e.target.closest('.cart-item').remove();
-                
-                // Atualiza os totais na tela
-                document.getElementById('subtotal-carrinho').innerText = `R$ ${parseFloat(data.novoSubtotal).toFixed(2).replace('.', ',')}`;
-                document.getElementById('total-carrinho').innerText = `R$ ${parseFloat(data.novoTotal).toFixed(2).replace('.', ',')}`;
-                
-                // Se o carrinho ficou vazio, recarrega a página para mostrar a mensagem
-                if (data.carrinhoVazio) {
-                    window.location.reload();
-                }
+        btnPlus.addEventListener('click', () => {
+            let valor = parseInt(input.value, 10);
+            if (valor < maxEstoque) {
+                input.value = valor + 1;
+                // Dispara o evento 'change' para salvar a alteração no backend
+                input.dispatchEvent(new Event('change'));
+            }
+        });
+
+        btnMinus.addEventListener('click', () => {
+            let valor = parseInt(input.value, 10);
+            if (valor > 1) {
+                input.value = valor - 1;
+                input.dispatchEvent(new Event('change'));
             }
         });
     });
