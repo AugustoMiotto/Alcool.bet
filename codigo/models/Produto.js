@@ -29,7 +29,12 @@ module.exports = (sequelize, DataTypes) => {
     categoria: {
       type: DataTypes.STRING(50),
       allowNull: true
-    }
+    },
+     quantidade: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0 
+  }
   }, {
     sequelize,
     modelName: 'Produto',

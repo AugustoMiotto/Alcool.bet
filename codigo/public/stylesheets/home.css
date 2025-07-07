@@ -201,6 +201,11 @@ section {
   gap: 2rem;
 }
 
+.produto-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .produto-card {
   background-color: var(--white);
   border-radius: 8px;

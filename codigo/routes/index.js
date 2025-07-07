@@ -123,6 +123,81 @@ router.get('/usuario/:id', async (req, res) => {
   }
 });
 
+//ROTA GET Produto
+router.get('/produto/:id', async (req, res, next) => {
+  try {
+    // 1. Captura o ID da URL
+    const produtoId = req.params.id;
+
+    // 2. Busca no banco de dados o produto com esse ID
+    const produtoEncontrado = await Produto.findByPk(produtoId);
+
+    // 3. Verifica se o produto foi encontrado
+    if (!produtoEncontrado) {
+      // Se não encontrou, envia para a página de erro 404
+      return next(createError(404, 'Produto não encontrado'));
+    }
+
+    // 4. Se encontrou, renderiza a página 'produto.ejs', passando os dados
+    //    do produto encontrado na variável 'product'.
+    res.render('produto', {
+      product: produtoEncontrado,
+      // Dados de exemplo para as outras seções da sua página:
+      relatedProducts: [], // Você pode implementar a busca por produtos relacionados depois
+    });
+
+  } catch (err) {
+    console.error("Erro ao buscar detalhes do produto:", err);
+    next(err);
+  }
+});
+
+//ROTA GET EDITAR PRODUTO
+router.get('/admin/produtos/editar/:id', isAdmin, async (req, res, next) => {
+    try {
+        const produtoId = req.params.id;
+        const produto = await Produto.findByPk(produtoId);
+
+        if (!produto) {
+            return next(createError(404, 'Produto não encontrado para edição.'));
+        }
+
+        // Renderiza uma nova página de edição, passando os dados do produto
+        res.render('admin/editar-produto', { produto: produto });
+
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/carrinho', function(req, res, next) {
+  // Vamos buscar os itens do carrinho da sessão do usuário.
+  // Se não houver carrinho, usamos uma lista vazia.
+  const carrinho = req.session.carrinho || [];
+
+  // --- CÁLCULO DOS TOTAIS ---
+  let subtotal = 0;
+  if (carrinho.length > 0) {
+    // Usamos o método 'reduce' para somar o (preço * quantidade) de cada item.
+    subtotal = carrinho.reduce((total, produto) => {
+      return total + (produto.preco * produto.quantidade);
+    }, 0);
+  }
+
+  // Supondo frete grátis por enquanto
+  const frete = 0;
+  const total = subtotal + frete;
+  // --- FIM DO CÁLCULO ---
+
+  // Renderizamos a página, passando os itens e os totais já calculados.
+  res.render('carrinho', {
+    carrinho: carrinho,
+    subtotal: subtotal,
+    total: total,
+    frete: frete
+  });
+});
+
 // Rota GET para exibir página com detalhes do pedido X
 router.get('/pedidos/:id', async (req, res) => {
   try {
@@ -335,38 +410,12 @@ router.post('/usuario/:id/editar', async (req, res) => {
   }
 });
 
-router.get('/carrinho', function(req, res, next) {
-  // Vamos buscar os itens do carrinho da sessão do usuário.
-  // Se não houver carrinho, usamos uma lista vazia.
-  const carrinho = req.session.carrinho || [];
 
-  // --- CÁLCULO DOS TOTAIS ---
-  let subtotal = 0;
-  if (carrinho.length > 0) {
-    // Usamos o método 'reduce' para somar o (preço * quantidade) de cada item.
-    subtotal = carrinho.reduce((total, produto) => {
-      return total + (produto.preco * produto.quantidade);
-    }, 0);
-  }
-
-  // Supondo frete grátis por enquanto
-  const frete = 0;
-  const total = subtotal + frete;
-  // --- FIM DO CÁLCULO ---
-
-  // Renderizamos a página, passando os itens e os totais já calculados.
-  res.render('carrinho', {
-    carrinho: carrinho,
-    subtotal: subtotal,
-    total: total,
-    frete: frete
-  });
-});
 
 // ROTA CADASTRAR PRODUTO
 router.post('/admin/cadastro-produto', isAdmin, async (req, res, next) => {
   try {
-    const { nome, preco, imagem, descricao, categoria } = req.body;
+    const { nome, preco, imagem, descricao, categoria, quantidade } = req.body;
 
     if (!nome || !preco || !imagem) {
       return res.render('admin/cadastro-produto', { 
@@ -379,7 +428,8 @@ router.post('/admin/cadastro-produto', isAdmin, async (req, res, next) => {
       preco, 
       imagem, 
       descricao, 
-      categoria 
+      categoria,
+      quantidade 
     });
 
     res.redirect('/');
@@ -388,6 +438,49 @@ router.post('/admin/cadastro-produto', isAdmin, async (req, res, next) => {
     console.error("Erro ao cadastrar produto:", err);
     return next(err);
   }
+});
+
+
+router.post('/admin/produtos/editar/:id', isAdmin, async (req, res, next) => {
+    try {
+        const produtoId = req.params.id;
+        // Pega os dados atualizados do corpo do formulário
+        const dadosAtualizados = req.body; 
+        
+        const produto = await Produto.findByPk(produtoId);
+
+        if (produto) {
+            // O método update do Sequelize salva as alterações
+            await produto.update(dadosAtualizados);
+            // Redireciona de volta para a página do produto para ver as alterações
+            res.redirect(`/produto/${produtoId}`);
+        } else {
+            return res.status(404).send('Produto não encontrado para atualização.');
+        }
+
+    } catch (err) {
+        next(err);
+    }
+});
+
+// ROTA POST DELETAR PRODUTO
+router.post('/admin/produtos/excluir/:id', isAdmin, async (req, res, next) => {
+    try {
+        const produtoId = req.params.id;
+        const produto = await Produto.findByPk(produtoId);
+
+        if (produto) {
+            await produto.destroy(); // Comando do Sequelize para deletar o registro
+            console.log(`Produto ${produtoId} excluído com sucesso.`);
+            res.redirect('/'); // Redireciona para a homepage após a exclusão
+        } else {
+            return res.status(404).send('Produto não encontrado.');
+        }
+
+    } catch (err) {
+        console.error("Erro ao excluir produto:", err);
+        next(err);
+    }
 });
 
 

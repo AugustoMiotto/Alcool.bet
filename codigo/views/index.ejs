@@ -70,20 +70,22 @@
                 <% } %>
                 <%# --- FIM DO PAINEL DE ADMIN --- %>
 
-                <div class="produtos-grid">
-                    <%# --- LISTAGEM DINÂMICA DE PRODUTOS --- %>
-                    <% if (produtos && produtos.length > 0) { %>
-                        <% produtos.forEach(produto => { %>
-                            <div class="produto-card">
-                                <div class="produto-img">
-                                    <img src="<%= produto.imagem %>" alt="<%= produto.nome %>" />
-                                </div>
-                                <div class="produto-info">
-                                    <h3><%= produto.nome %></h3>
-                                    <p class="preco">R$ <%= produto.preco.toString().replace('.', ',') %></p>
-                                    <button class="btn-comprar">Adicionar ao Carrinho</button>
-                                </div>
-                            </div>
+                    <div class="produtos-grid">
+                        <%# --- LISTAGEM DINÂMICA DE PRODUTOS --- %>
+                        <% if (produtos && produtos.length > 0) { %>
+                            <% produtos.forEach(produto => { %>
+                                <a href="/produto/<%= produto.id %>" class="produto-card-link">
+                    <div class="produto-card">
+                        <div class="produto-img">
+                            <img src="<%= produto.imagem %>" alt="<%= produto.nome %>" />
+                        </div>
+                        <div class="produto-info">
+                            <h3><%= produto.nome %></h3>
+                            <p class="preco">R$ <%= produto.preco.toString().replace('.', ',') %></p>
+                            <button class="btn-comprar">Adicionar ao Carrinho</button>
+                        </div>
+                    </div>
+                </a>
                         <% }) %>
                     <% } else { %>
                         <p>Nenhum produto cadastrado no momento.</p>
