@@ -42,8 +42,7 @@
                     
                     <div class="summary-row">
                         <span>Subtotal</span>
-                        <%# Usa a variável 'subtotal' que veio da rota %>
-                        <span>R$ <%= subtotal.toFixed(2).replace('.', ',') %></span>
+                        <span id="subtotal-carrinho">R$ <%= subtotal.toFixed(2).replace('.', ',') %></span>
                     </div>
                     
                     <div class="summary-row">
@@ -53,8 +52,7 @@
                     
                     <div class="summary-row summary-total">
                         <span>Total</span>
-                        <%# Usa a variável 'total' que veio da rota %>
-                        <span>R$ <%= total.toFixed(2).replace('.', ',') %></span>
+                        <span id="total-carrinho">R$ <%= total.toFixed(2).replace('.', ',') %></span>
                     </div>
                     
                     <a href="/checkout" class="btn btn-primary">Finalizar Compra</a>
@@ -71,6 +69,63 @@
         <% } %>
     </main>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Seleciona todos os botões de remover e inputs de quantidade
+    const botoesRemover = document.querySelectorAll('.remove-btn');
+    const inputsQuantidade = document.querySelectorAll('.item-quantity input');
 
+    // Adiciona o evento de clique para cada botão de REMOVER
+    botoesRemover.forEach(botao => {
+        botao.addEventListener('click', async (e) => {
+            const produtoId = e.target.dataset.id;
+            
+            // Envia a requisição para a rota de remoção
+            const response = await fetch(`/carrinho/remover/${produtoId}`, { method: 'POST' });
+            const data = await response.json();
+
+            if (data.success) {
+                // Remove o elemento do item do carrinho da tela
+                e.target.closest('.cart-item').remove();
+                
+                // Atualiza os totais na tela
+                document.getElementById('subtotal-carrinho').innerText = `R$ ${parseFloat(data.novoSubtotal).toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-carrinho').innerText = `R$ ${parseFloat(data.novoTotal).toFixed(2).replace('.', ',')}`;
+                
+                // Se o carrinho ficou vazio, recarrega a página para mostrar a mensagem
+                if (data.carrinhoVazio) {
+                    window.location.reload();
+                }
+            }
+        });
+    });
+
+    // Adiciona o evento de 'change' para cada input de QUANTIDADE
+    inputsQuantidade.forEach(input => {
+        input.addEventListener('change', async (e) => {
+            const produtoId = e.target.dataset.id;
+            const quantidade = e.target.value;
+            
+            // Envia a requisição para a rota de atualização
+            const response = await fetch(`/carrinho/atualizar/${produtoId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quantidade: quantidade })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                // Encontra o elemento do subtotal do item e o atualiza
+                const subtotalItemEl = e.target.closest('.cart-item').querySelector('.item-subtotal');
+                subtotalItemEl.innerText = `R$ ${parseFloat(data.novoSubtotalItem).toFixed(2).replace('.', ',')}`;
+                
+                // Atualiza os totais na tela
+                document.getElementById('subtotal-carrinho').innerText = `R$ ${parseFloat(data.novoSubtotal).toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-carrinho').innerText = `R$ ${parseFloat(data.novoTotal).toFixed(2).replace('.', ',')}`;
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>

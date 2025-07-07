@@ -82,7 +82,11 @@
                         <div class="produto-info">
                             <h3><%= produto.nome %></h3>
                             <p class="preco">R$ <%= produto.preco.toString().replace('.', ',') %></p>
-                            <button class="btn-comprar">Adicionar ao Carrinho</button>
+                             <form action="/carrinho/adicionar" method="POST">
+                                <input type="hidden" name="produtoId" value="<%= produto.id %>">
+                                 <input type="hidden" name="quantidade" value="1">
+                                <button type="submit" class="btn-comprar">Adicionar ao Carrinho</button>
+                            </form>
                         </div>
                     </div>
                 </a>

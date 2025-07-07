@@ -170,6 +170,7 @@ router.get('/admin/produtos/editar/:id', isAdmin, async (req, res, next) => {
     }
 });
 
+//ROTA GET CARRINHO
 router.get('/carrinho', function(req, res, next) {
   // Vamos buscar os itens do carrinho da sessão do usuário.
   // Se não houver carrinho, usamos uma lista vazia.
@@ -562,5 +563,115 @@ router.post('/redefinir-senha/:token', async (req, res, next) => {
 
   } catch (err) {
     next(err);
+  }
+});
+
+//ROTA POST ADICIONAR AO CARRINHO
+router.post('/carrinho/adicionar', async (req, res, next) => {
+    try {
+        const produtoId = req.body.produtoId;
+        const quantidade = parseInt(req.body.quantidade, 10);
+
+        // 1. Inicia o carrinho na sessão se ele não existir
+        if (!req.session.carrinho) {
+            req.session.carrinho = [];
+        }
+
+        // 2. Busca os dados completos do produto no banco de dados
+        const produto = await Produto.findByPk(produtoId);
+        if (!produto) {
+            return res.status(404).send('Produto não encontrado!');
+        }
+
+        // 3. Verifica se o item já existe no carrinho
+        const itemExistente = req.session.carrinho.find(item => item.id === produtoId);
+
+        if (itemExistente) {
+            // Se já existe, apenas aumenta a quantidade
+            itemExistente.quantidade += quantidade;
+        } else {
+            // Se não existe, adiciona o novo item ao carrinho
+            req.session.carrinho.push({
+                id: produto.id,
+                nome: produto.nome,
+                preco: parseFloat(produto.preco), // Garante que o preço é um número
+                imagem: produto.imagem,
+                quantidade: quantidade
+            });
+        }
+
+        // 4. Redireciona o usuário para a página do carrinho para ele ver o que adicionou
+        res.redirect('/carrinho');
+
+    } catch (err) {
+        console.error("Erro ao adicionar item ao carrinho:", err);
+        next(err);
+    }
+});
+
+//ROTA POST ATUALIZAR CARRINHO
+router.post('/carrinho/atualizar/:id', (req, res, next) => {
+  try {
+    // 1. Converte o ID da URL para um NÚMERO
+    const produtoId = parseInt(req.params.id, 10);
+    const novaQuantidade = parseInt(req.body.quantidade, 10);
+    let carrinho = req.session.carrinho || [];
+
+    console.log('--- Atualizando Quantidade ---');
+    console.log(`ID: ${produtoId}, Nova Qtd: ${novaQuantidade}`);
+    
+    // 2. Encontra o item no carrinho e atualiza sua quantidade
+    const itemParaAtualizar = carrinho.find(item => item.id === produtoId);
+    if (itemParaAtualizar) {
+      itemParaAtualizar.quantidade = novaQuantidade;
+    }
+
+    req.session.carrinho = carrinho;
+
+    // Recalcula os totais
+    const subtotal = carrinho.reduce((total, produto) => total + (produto.preco * produto.quantidade), 0);
+    const total = subtotal;
+
+    const novoSubtotalItem = (itemParaAtualizar.preco * novaQuantidade).toFixed(2);
+    res.json({ 
+      success: true, 
+      novoTotal: total.toFixed(2), 
+      novoSubtotal: subtotal.toFixed(2),
+      novoSubtotalItem: novoSubtotalItem
+    });
+
+  } catch (err) {
+    console.error("Erro ao atualizar quantidade:", err);
+    res.status(500).json({ success: false, message: 'Erro ao atualizar quantidade.' });
+  }
+});
+
+//ROTA POST REMOVER DO CARRINHO
+router.post('/carrinho/remover/:id', (req, res, next) => {
+  try {
+    // 1. Converte o ID da URL para um NÚMERO
+    const produtoId = parseInt(req.params.id, 10);
+    let carrinho = req.session.carrinho || [];
+
+    console.log('--- Removendo Item ---');
+    console.log('ID para remover:', produtoId, `(Tipo: ${typeof produtoId})`);
+    console.log('Carrinho ANTES:', JSON.stringify(carrinho, null, 2));
+
+    // 2. Filtra o carrinho, mantendo os itens cujo ID é DIFERENTE do que queremos remover
+    const novoCarrinho = carrinho.filter(item => item.id !== produtoId);
+    
+    req.session.carrinho = novoCarrinho; // Atualizamos a sessão com o novo carrinho
+
+    console.log('Carrinho DEPOIS:', JSON.stringify(req.session.carrinho, null, 2));
+
+    // Recalcula os totais
+    const subtotal = novoCarrinho.reduce((total, produto) => total + (produto.preco * produto.quantidade), 0);
+    const total = subtotal;
+
+    res.json({ success: true, novoTotal: total.toFixed(2), novoSubtotal: subtotal.toFixed(2), carrinhoVazio: novoCarrinho.length === 0 });
+
+  } catch (err) {
+    console.error("Erro ao remover item do carrinho:", err);
+    res.status(500).json({ success: false, message: 'Erro ao remover item.' });
   }
 });

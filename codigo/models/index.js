@@ -41,6 +41,6 @@ db.Pedido.belongsTo(db.Usuario, { foreignKey: 'usuario_id' });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-sequelize.sync({ alter: true });
+
 
 module.exports = db;

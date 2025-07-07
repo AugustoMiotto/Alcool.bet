@@ -1,4 +1,3 @@
-<%# Vamos usar a variável 'produto' em vez de 'product' para manter a consistência %>
 <% const produto = product; %>
 
 <!DOCTYPE html>
@@ -7,79 +6,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= produto.nome %> - Alcool.bet</title>
+    <link rel="stylesheet" href="/stylesheets/produto.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/stylesheets/produto.css">
-    <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 <body class="text-amber-900">
-    <header class="topo"></header>
 
-    <%# --- PAINEL DE ADMIN  --- %>
-<% if (locals.isAdmin) { %>
-    <div class="admin-panel" style="background-color: #1f2937; color: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;">
-        <h3 style="margin: 0; font-size: 1.1rem; font-weight: bold;">Painel do Administrador:</h3>
-        
-        <a href="/admin/produtos/editar/<%= produto.id %>" class="admin-btn-edit" style="background-color: #f97316; padding: 0.5rem 1rem; border-radius: 5px; text-decoration: none; color: white;">Editar</a>
-
-        <form action="/admin/produtos/excluir/<%= produto.id %>" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.');">
-            <button type="submit" class="admin-btn-delete" style="background-color: #dc2626; padding: 0.5rem 1rem; border-radius: 5px; border: none; color: white; cursor: pointer;">Excluir</button>
-        </form>
-    </div>
-<% } %>
-
-
+    <header class="topo">
+      <div class="container">
+        <a href="/" class="logo">Alcool.bet</a>
+        <div class="busca">
+          <input type="text" placeholder="Buscar bebidas..." />
+          <button class="btn-busca">Buscar</button>
+        </div>
+        <nav class="nav-top">
+          <a href="/promocoes" class="nav-btn">Promoções</a>
+          <a href="/carrinho" class="nav-btn">Carrinho</a>
+          <% if (locals.isLoggedIn) { %>
+            <a href="/pedidos" class="nav-btn">Meus Pedidos</a>
+            <% if (locals.isAdmin) { %>
+              <a href="/admin/dashboard" class="nav-btn admin-link">Painel Admin</a>
+            <% } %>
+            <a href="/usuario/<%= locals.userId %>" class="nav-btn conta" title="Minha Conta">
+              <img src="/imagens/user.png" alt="Minha Conta" class="icone-login" />
+            </a>
+          <% } else { %>
+            <a href="/login" class="nav-btn conta" title="Login / Cadastre-se">
+              <img src="/imagens/user.png" alt="Login" class="icone-login" />
+            </a>
+          <% } %>
+        </nav>
+        <button class="menu-mobile">☰ Menu</button>
+      </div>
+    </header>
     <main class="container mx-auto px-4 py-8">
+        <%# PAINEL DE ADMIN CONDICIONAL %>
+        <% if (locals.isAdmin) { %>
+            <div class="admin-panel" style="background-color: #1f2937; color: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;">
+                <h3 style="margin: 0; font-size: 1.1rem; font-weight: bold;">Painel do Administrador:</h3>
+                <a href="/admin/produtos/editar/<%= produto.id %>" style="background-color: #f97316; padding: 0.5rem 1rem; border-radius: 5px; text-decoration: none; color: white;">Editar</a>
+                <form action="/admin/produtos/excluir/<%= produto.id %>" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este produto?');">
+                    <button type="submit" style="background-color: #dc2626; padding: 0.5rem 1rem; border-radius: 5px; border: none; color: white; cursor: pointer;">Excluir</button>
+                </form>
+            </div>
+        <% } %>
+
         <section class="mb-12">
             <div class="flex flex-col md:flex-row gap-8">
                 <div class="w-full md:w-1/2 bg-white rounded-lg shadow-md p-4 flex items-center justify-center">
                     <img src="<%= produto.imagem %>" alt="<%= produto.nome %>" class="max-h-[400px] object-contain">
                 </div>
+                
                 <div class="w-full md:w-1/2">
                     <h1 class="text-2xl md:text-3xl font-bold mb-2"><%= produto.nome %></h1>
                     
-                    <div class="flex items-center mb-4">
-                        <div class="star-rating flex mr-2">
-                            <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span>
-                        </div>
-                        <span class="text-amber-600 text-sm">(0) avaliações</span>
+                    <div class="mb-6">
+                        <p class="text-3xl font-bold text-amber-800 mb-1">R$ <%= parseFloat(produto.preco).toFixed(2).replace('.',',') %></p>
                     </div>
                     
                     <div class="mb-6">
-                
-                        <p class="text-3xl ...">R$ <%= parseFloat(produto.preco).toFixed(2).replace('.',',') %></p>
-                    </div>
-                    
-                    <div class="mb-6">
-                
                         <p class="<%= produto.quantidade > 0 ? 'text-emerald-600' : 'text-red-600' %> font-medium">
                             <i class="fas <%= produto.quantidade > 0 ? 'fa-check-circle' : 'fa-times-circle' %> mr-1"></i>
                             <%= produto.quantidade > 0 ? 'Disponível em estoque' : 'Produto esgotado' %>
                         </p>
-                        <% if(produto.quantidade > 0) { %>
-                            <p class="text-sm text-amber-600"><%= produto.quantidade %> unidades disponíveis</p>
-                        <% } %>
                     </div>
                     
-                    <div class="flex items-center mb-6">
-                        <div class="mr-4">
-                         <label class="block text-sm font-medium mb-1">Quantidade</label>
-                    <div class="flex border border-amber-300 rounded-md">
-                        <button id="btn-minus" type="button" class="px-3 py-1 bg-amber-100 text-amber-800">-</button>
-                        
-                        <input id="input-quantidade" type="number" value="1" min="1" max="<%= produto.quantidade %>" class="w-12 text-center px-1 border-x border-amber-300">
-                        
-                        <button id="btn-plus" type="button" class="px-3 py-1 bg-amber-100 text-amber-800">+</button>
-                    </div>
-                </div>
+                    <form action="/carrinho/adicionar" method="POST">
+                        <input type="hidden" name="produtoId" value="<%= produto.id %>">
+                        <div class="flex items-end gap-4">
+                            <div class="mr-4">
+                                <label for="input-quantidade" class="block text-sm font-medium mb-1">Quantidade</label>
+                                <div class="flex border border-amber-300 rounded-md">
+                                    <button id="btn-minus" type="button" class="px-3 py-1 bg-amber-100 text-amber-800">-</button>
+                                    <input id="input-quantidade" name="quantidade" type="number" value="1" min="1" max="<%= produto.quantidade %>" class="w-12 text-center px-1 border-x border-amber-300">
+                                    <button id="btn-plus" type="button" class="px-3 py-1 bg-amber-100 text-amber-800">+</button>
+                                </div>
+                            </div>
+                            <button type="submit" class="px-6 py-3 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition font-medium">
+                                <i class="fas fa-plus mr-2"></i>Adicionar ao carrinho
+                            </button>
                         </div>
-                        
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <button class="px-6 py-3 bg-amber-700 text-white rounded-md hover:bg-amber-800 transition font-medium">Comprar agora</button>
-                            <button class="px-6 py-3 bg-amber-200 text-amber-800 rounded-md hover:bg-amber-300 transition font-medium">Adicionar ao carrinho</button>
-                        </div>
+                    </form>
                     </div>
-                </div>
             </div>
         </section>
         
@@ -89,38 +97,62 @@
                 <p><%= produto.descricao %></p>
             </div>
         </section>
-        
-        </main>
+    </main>
 
-    <footer>...</footer>
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <h3>Alcool.bet</h3>
+            <p>Sua loja online de bebidas com preços imbatíveis e entrega rápida.</p>
+          </div>
+          <div class="footer-col">
+            <h3>Categorias</h3>
+            <ul>
+              <li><a href="#">Cervejas</a></li>
+              <li><a href="#">Vinhos</a></li>
+              <li><a href="#">Whiskys</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h3>Institucional</h3>
+            <ul>
+              <li><a href="#">Quem Somos</a></li>
+              <li><a href="#">Política de Privacidade</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h3>Atendimento</h3>
+            <ul>
+              <li><a href="#">Fale Conosco</a></li>
+              <li><a href="#">Dúvidas Frequentes</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Alcool.bet - Todos os direitos reservados.</p>
+        </div>
+      </div>
+    </footer>
     <script>
-    // Espera o documento carregar completamente
     document.addEventListener('DOMContentLoaded', () => {
         const btnMinus = document.getElementById('btn-minus');
         const btnPlus = document.getElementById('btn-plus');
         const inputQuantidade = document.getElementById('input-quantidade');
-        
-        // Pega o estoque máximo do atributo 'max' do input
         const maxEstoque = parseInt(inputQuantidade.max, 10);
-
-        // Adiciona o evento de clique ao botão de AUMENTAR
         btnPlus.addEventListener('click', () => {
             let valorAtual = parseInt(inputQuantidade.value, 10);
-            // Só aumenta se a quantidade for menor que o estoque
             if (valorAtual < maxEstoque) {
                 inputQuantidade.value = valorAtual + 1;
             }
         });
-
-        // Adiciona o evento de clique ao botão de DIMINUIR
         btnMinus.addEventListener('click', () => {
             let valorAtual = parseInt(inputQuantidade.value, 10);
-            // Só diminui se a quantidade for maior que 1
             if (valorAtual > 1) {
                 inputQuantidade.value = valorAtual - 1;
             }
         });
     });
-</script>
+    </script>
 </body>
 </html>
