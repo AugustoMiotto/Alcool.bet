@@ -26,9 +26,6 @@
                 
                 <% if (locals.isLoggedIn) { %>
                     <a href="/pedidos/<%= locals.userId %>" class="nav-btn">Meus Pedidos</a>
-                    <% if (locals.isAdmin) { %>
-                        <a href="/admin/dashboard" class="nav-btn admin-link">Painel Admin</a>
-                    <% } %>
                     <a href="/usuario/<%= locals.userId %>" class="nav-btn conta" title="Minha Conta">
                         <img src="/imagens/user.png" alt="Minha Conta" class="icone-login" />
                     </a>
