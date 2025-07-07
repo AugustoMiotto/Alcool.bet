@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Categorias</title>
+    <link rel="stylesheet" href="/stylesheets/gerenciar-categoria.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciar Categorias</h1>
+
+        <form action="/admin/categorias/adicionar" method="POST">
+            <div class="form-group">
+                <label for="nome">Nome da Nova Categoria</label>
+                <input type="text" id="nome" name="nome" placeholder="Ex: Cervejas Especiais" required>
+            </div>
+            <button type="submit" class="submit-btn">Adicionar Categoria</button>
+        </form>
+
+        <div class="category-list">
+            <h2>Categorias Atuais</h2>
+            <% if (categorias && categorias.length > 0) { %>
+                <% categorias.forEach(categoria => { %>
+                    <div class="category-item">
+                        <span><%= categoria.nome %></span>
+                        <form action="/admin/categorias/excluir/<%= categoria.id %>" method="POST" onsubmit="return confirm('Tem certeza? Excluir uma categoria pode afetar os produtos associados a ela.');">
+                            <button type="submit" class="delete-btn">Excluir</button>
+                        </form>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>Nenhuma categoria cadastrada.</p>
+            <% } %>
+        </div>
+    </div>
+
+    </body>
+</html>

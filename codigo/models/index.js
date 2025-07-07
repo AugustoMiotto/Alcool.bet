@@ -12,12 +12,11 @@ fs
   .readdirSync(__dirname)
   .filter(file => {
     return (
-      file.indexOf('.') !== 0 &&           
-      file !== basename &&                
-      file !== 'database.js' &&            
-      file !== 'seed-produtos.js' &&       
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
+      file.indexOf('.') !== 0 &&
+      file !== basename &&
+      file !== 'database.js' &&
+      file !== 'seed-produtos.js' &&
+      file.slice(-3) === '.js'
     );
   })
   .forEach(file => {
@@ -25,22 +24,14 @@ fs
     db[model.name] = model;
   });
 
+// Esta parte agora executa as associações definidas em CADA arquivo de modelo
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
-// Associações centralizadas
-db.Usuario.hasOne(db.Admin, { foreignKey: 'id' });
-db.Admin.belongsTo(db.Usuario, { foreignKey: 'id' });
-
-// Relacionamento com pedidos
-db.Usuario.hasMany(db.Pedido, { foreignKey: 'usuario_id' });
-db.Pedido.belongsTo(db.Usuario, { foreignKey: 'usuario_id' });
-
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-
 
 module.exports = db;

@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Perfil - Alcool.bet</title>
    <script src="https://cdn.tailwindcss.com"></script>
-   <link rel="stylesheet" href="/stylesheets/usuario.css"> 
+   <link rel="stylesheet" href="/stylesheets/usuario.css">
+   <link rel="stylesheet" href="/stylesheets/produto.css"> 
 </head>
 <body class="bg-beige-50">
+    
     <div class="top-bar h-16 w-full flex items-center px-4">
         <a href="/" class="logo">Alcool.bet</a>
     </div>
 
     <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <header class="mb-8">
-            <h1 class="text-3xl font-semibold text-gray-800">Bem-vindo, <%= usuario.nome.split(' ')[0] %>!</h1>
-            <p class="text-gray-600">Gerencie suas informações pessoais, endereços e pedidos</p>
-        </header>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8 pl-4">
                 <div class="bg-white rounded-lg shadow-sm p-6">
@@ -93,5 +91,39 @@
             </div>
         </div>
     </div>
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <h3>Alcool.bet</h3>
+            <p>Sua loja online de bebidas com preços imbatíveis e entrega rápida.</p>
+          </div>
+          <div class="footer-col">
+            <h3>Categorias</h3>
+            <ul>
+              <li><a href="#">Cervejas</a></li>
+              <li><a href="#">Vinhos</a></li>
+              <li><a href="#">Whiskys</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h3>Institucional</h3>
+            <ul>
+              <li><a href="#">Quem Somos</a></li>
+              <li><a href="#">Política de Privacidade</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h3>Atendimento</h3>
+            <ul>
+              <li><a href="#">Fale Conosco</a></li>
+              <li><a href="#">Dúvidas Frequentes</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Alcool.bet - Todos os direitos reservados.</p>
+        </div>
+      </div>
 </body>
 </html>

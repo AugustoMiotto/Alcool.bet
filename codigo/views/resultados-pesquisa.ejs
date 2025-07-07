@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Pedido #<%= pedido.id %> - Alcool.bet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados para: <%= termo %></title>
+    <link rel="stylesheet" href="/stylesheets/home.css">
     <link rel="stylesheet" href="/stylesheets/produto.css">
-    <link rel="stylesheet" href="/stylesheets/pedido-detalhe.css">
 </head>
 <body>
     <header class="topo">
@@ -33,31 +34,40 @@
       </div>
     </header>
 
-    <main class="detail-container">
-        <h1>Detalhes do Pedido #<%= pedido.id %></h1>
+    <main>
+        <div class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+            
+            <h1 style="font-size: 1.8rem; margin-bottom: 2rem; border-bottom: 2px solid #eee; padding-bottom: 1rem;">
+                Resultados da busca por: "<%= termo %>"
+            </h1>
 
-        <div class="order-details-card">
-            <p><strong>Status:</strong> <span class="order-status status-processando"><%= pedido.status %></span></p>
-            <p><strong>Data:</strong> <%= new Date(pedido.data).toLocaleDateString('pt-BR') %></p>
-            <p><strong>Cliente:</strong> <%= pedido.usuario.nome %></p>
-            <p><strong>Total:</strong> R$ <%= parseFloat(pedido.total).toFixed(2).replace('.',',') %></p>
-        </div>
-
-        <div class="order-items-card">
-            <h2>Itens Comprados</h2>
-            <% if(pedido.itens && pedido.itens.length > 0) { %>
-                <% pedido.itens.forEach(item => { %>
-                    <div class="item-row">
-                        <span class="item-info"><%= item.quantidade %>x <%= item.Produto.nome %></span>
-                        <span class="item-price">R$ <%= (item.precoUnitario * item.quantidade).toFixed(2).replace('.',',') %></span>
-                    </div>
-                <% }) %>
+            <%# Verifica se foram encontrados resultados %>
+            <% if (produtos && produtos.length > 0) { %>
+                <div class="produtos-grid">
+                    <% produtos.forEach(produto => { %>
+                        <a href="/produto/<%= produto.id %>" class="produto-card-link">
+                            <div class="produto-card">
+                                <div class="produto-img">
+                                    <img src="<%= produto.imagem %>" alt="<%= produto.nome %>" />
+                                </div>
+                                <div class="produto-info">
+                                    <h3><%= produto.nome %></h3>
+                                    <p class="preco">R$ <%= parseFloat(produto.preco).toFixed(2).replace('.', ',') %></p>
+                                    <button class="btn-comprar">Ver Detalhes</button>
+                                </div>
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <%# Mensagem para o caso de não encontrar nada %>
+                <p style="text-align: center; font-size: 1.2rem; color: #555;">
+                    Nenhum produto encontrado com este termo. Tente novamente.
+                </p>
             <% } %>
         </div>
-
-        <a href="/pedidos" class="back-link">Voltar para Meus Pedidos</a>
     </main>
-    
+
     <footer>
       <div class="container">
         <div class="footer-grid">

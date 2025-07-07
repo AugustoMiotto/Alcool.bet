@@ -1,0 +1,116 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f0e8;
+    color: #5a4a42;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fffbf7;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(154, 129, 106, 0.1);
+}
+
+h1 {
+    color: #7b5a4a;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 500;
+    border-bottom: 2px solid #e0d6cc;
+    padding-bottom: 0.8rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #7b5a4a;
+    font-weight: 500;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #d8c9b8;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #b38b6d;
+}
+
+.submit-btn {
+    background-color: #7b5a4a;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s;
+    font-weight: 500;
+}
+
+.submit-btn:hover {
+    background-color: #8c715a;
+}
+
+/* === NOVOS ESTILOS PARA A LISTA DE CATEGORIAS === */
+
+.category-list {
+    margin-top: 3rem;
+    border-top: 2px solid #e0d6cc;
+    padding-top: 1.5rem;
+}
+
+.category-list h2 {
+    font-size: 1.5rem;
+    color: #7b5a4a;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid #f0e8e1;
+    font-size: 1.1rem;
+}
+
+.category-item:last-child {
+    border-bottom: none;
+}
+
+.delete-btn {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: #c53030;
+}

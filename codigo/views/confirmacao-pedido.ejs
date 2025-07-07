@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedido Confirmado</title>
+    <link rel="stylesheet" href="/stylesheets/checkout.css">
+</head>
+<body>
+    <div class="container" style="text-align: center;">
+        <h1>Obrigado pela sua compra!</h1>
+        <p>Seu pedido #<%= pedido.id %> foi recebido e está sendo processado.</p> <br>
+        <a href="/pedido/pdf/<%= pedido.id %>" class="btn-submit" style="max-width:300px; margin: 1rem auto;">Baixar Comprovante em PDF</a> 
+        <br>
+        <br>
+        <br>
+        <a href="/" class="btn-submit" id="bt2" style="max-width:300px; margin: 1rem auto;">Voltar a tela principal</a>
+    </div>
+</body>
+</html>

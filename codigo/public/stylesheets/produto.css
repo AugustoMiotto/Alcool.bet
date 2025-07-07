@@ -1,12 +1,12 @@
 
 :root {
   --white: #ffffff;
-  --black: #111827;
-  --amber: #f97316;
-  --amber-light: #fb923c;
-  --gray-dark: #4b5563;
-  --gray-medium: #9ca3af;
-  --gray-light: #f3f4f6;
+  --black: #1F2937;
+  --amber: #B35C22;
+  --amber-light: #E07A36;
+  --gray-light: #F3F4F6;
+  --gray-medium: #9CA3AF;
+  --gray-dark: #4B5563;
 }
 
 body {
@@ -102,8 +102,8 @@ body {
 }
 
 .nav-btn.conta img {
-  width: 40px;
-  height: 36px;
+  width: 60px;
+  height:40px;
   vertical-align: middle;
 }
 

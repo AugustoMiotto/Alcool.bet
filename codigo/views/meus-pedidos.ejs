@@ -2,9 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Pedido #<%= pedido.id %> - Alcool.bet</title>
+    <title>Meus Pedidos - Alcool.bet</title>
     <link rel="stylesheet" href="/stylesheets/produto.css">
-    <link rel="stylesheet" href="/stylesheets/pedido-detalhe.css">
+    <link rel="stylesheet" href="/stylesheets/meus-pedidos.css">
 </head>
 <body>
     <header class="topo">
@@ -33,29 +33,28 @@
       </div>
     </header>
 
-    <main class="detail-container">
-        <h1>Detalhes do Pedido #<%= pedido.id %></h1>
+    <main class="order-list-container">
+        <h1>Meus Pedidos</h1>
 
-        <div class="order-details-card">
-            <p><strong>Status:</strong> <span class="order-status status-processando"><%= pedido.status %></span></p>
-            <p><strong>Data:</strong> <%= new Date(pedido.data).toLocaleDateString('pt-BR') %></p>
-            <p><strong>Cliente:</strong> <%= pedido.usuario.nome %></p>
-            <p><strong>Total:</strong> R$ <%= parseFloat(pedido.total).toFixed(2).replace('.',',') %></p>
-        </div>
-
-        <div class="order-items-card">
-            <h2>Itens Comprados</h2>
-            <% if(pedido.itens && pedido.itens.length > 0) { %>
-                <% pedido.itens.forEach(item => { %>
-                    <div class="item-row">
-                        <span class="item-info"><%= item.quantidade %>x <%= item.Produto.nome %></span>
-                        <span class="item-price">R$ <%= (item.precoUnitario * item.quantidade).toFixed(2).replace('.',',') %></span>
+        <% if (pedidos && pedidos.length > 0) { %>
+            <% pedidos.forEach(pedido => { %>
+                <div class="order-card">
+                    <div class="order-card-header">
+                        <span class="order-id">Pedido #<%= pedido.id %></span>
+                        <span class="order-status status-processando"><%= pedido.status %></span>
                     </div>
-                <% }) %>
-            <% } %>
-        </div>
-
-        <a href="/pedidos" class="back-link">Voltar para Meus Pedidos</a>
+                    <div class="order-card-body">
+                        <p><strong>Data:</strong> <%= new Date(pedido.data).toLocaleDateString('pt-BR') %></p>
+                        <p><strong>Total:</strong> R$ <%= parseFloat(pedido.total).toFixed(2).replace('.',',') %></p>
+                    </div>
+                    <div class="order-card-footer">
+                        <a href="/pedidos/<%= pedido.id %>" class="btn-details">Ver Detalhes</a>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p class="no-orders">Você ainda não fez nenhum pedido.</p>
+        <% } %>
     </main>
     
     <footer>

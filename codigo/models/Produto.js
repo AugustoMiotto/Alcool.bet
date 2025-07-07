@@ -2,8 +2,17 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Produto extends Model {}
+  class Produto extends Model {
+    static associate(models) {
+      // Um Produto PODE ESTAR em muitos Itens de Pedido
+      this.hasMany(models.ItemPedido, { foreignKey: 'produto_id' });
+
+      // Associação com Categoria que já fizemos
+      this.belongsTo(models.Categoria, { foreignKey: 'categoriaId', as: 'categoria' });
+    }
+  }
   
+
   Produto.init({
     id: {
       type: DataTypes.INTEGER,
@@ -16,7 +25,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     preco: {
       type: DataTypes.DECIMAL(10,2),
-      allowNull: false
+      allowNull: false,
+      get() { // Mantendo o getter para evitar erros de .toFixed()
+        const value = this.getDataValue('preco');
+        return value === null ? null : parseFloat(value);
+      }
     },
     imagem: {
       type: DataTypes.STRING(255),
@@ -26,15 +39,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    categoria: {
-      type: DataTypes.STRING(50),
-      allowNull: true
+    categoriaId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Categorias',
+        key: 'id'
+      }
     },
-     quantidade: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 0 
-  }
+    quantidade: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0 
+    }
   }, {
     sequelize,
     modelName: 'Produto',

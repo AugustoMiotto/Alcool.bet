@@ -15,17 +15,17 @@
         <div class="container">
             <a href="/" class="logo">Alcool.bet</a>
 
-            <div class="busca">
-                <input type="text" placeholder="Buscar bebidas..." />
-                <button class="btn-busca">Buscar</button>
-            </div>
+            <form action="/pesquisar" method="GET" class="busca">
+                <input type="text" name="termo" placeholder="Buscar bebidas..." required />
+                <button type="submit" class="btn-busca">Buscar</button>
+            </form>
 
             <%# --- NAVEGAÇÃO DINÂMICA --- %>
             <nav class="nav-top">
                 <a href="/carrinho" class="nav-btn">Carrinho</a>
                 
                 <% if (locals.isLoggedIn) { %>
-                    <a href="/pedidos/<%= locals.userId %>" class="nav-btn">Meus Pedidos</a>
+                    <a href="/pedidos" class="nav-btn">Meus Pedidos</a>
                     <a href="/usuario/<%= locals.userId %>" class="nav-btn conta" title="Minha Conta">
                         <img src="/imagens/user.png" alt="Minha Conta" class="icone-login" />
                     </a>
@@ -50,7 +50,13 @@
             <div class="container">
                 <h2>Categorias de Bebidas</h2>
                 <div class="categoria-lista">
-                    </div>
+                    <a href="/" class="cat-btn active">Todos</a>
+                    <% if (categorias && categorias.length > 0) { %>
+                        <% categorias.forEach(categoria => { %>
+                        <a href="/categoria/<%= categoria.id %>" class="cat-btn"><%= categoria.nome %></a>
+                        <% }) %>
+                    <% } %>
+</div>
             </div>
         </section>
 
@@ -61,7 +67,8 @@
                 <% if (locals.isAdmin) { %>
                     <div class="admin-panel">
                         <h2>Painel do Administrador</h2>
-                        <a href="/admin/cadastro-produto" class="btn-admin">Cadastrar Novo Produto</a>
+                        <a href="/admin/cadastro-produto" class="btn-admin">Cadastrar Novo Produto    </a>
+                        <a href="/admin/categorias" class="btn-admin">Gerenciar Categorias</a>
                     </div>
                 <% } %>
                 <%# --- FIM DO PAINEL DE ADMIN --- %>
@@ -97,14 +104,40 @@
 
         </main>
 
-    <footer>
-        <div class="container">
-            <div class="footer-grid">
-                </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Alcool.bet - Todos os direitos reservados.</p>
-            </div>
+   <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <h3>Alcool.bet</h3>
+            <p>Sua loja online de bebidas com preços imbatíveis e entrega rápida.</p>
+          </div>
+          <div class="footer-col">
+            <h3>Categorias</h3>
+            <ul>
+              <li><a href="#">Cervejas</a></li>
+              <li><a href="#">Vinhos</a></li>
+              <li><a href="#">Whiskys</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h3>Institucional</h3>
+            <ul>
+              <li><a href="#">Quem Somos</a></li>
+              <li><a href="#">Política de Privacidade</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h3>Atendimento</h3>
+            <ul>
+              <li><a href="#">Fale Conosco</a></li>
+              <li><a href="#">Dúvidas Frequentes</a></li>
+            </ul>
+          </div>
         </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Alcool.bet - Todos os direitos reservados.</p>
+        </div>
+      </div>
     </footer>
 
 </body>

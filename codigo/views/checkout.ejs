@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Finalizar Compra</title>
+    <link rel="stylesheet" href="/stylesheets/checkout.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Finalizar Compra</h1>
+        <div class="checkout-grid">
+            <div class="shipping-info">
+                <h2>Endereço de Entrega</h2>
+                <form action="/finalizar-pedido" method="POST">
+                    <div class="form-group">
+                        <label for="endereco">Endereço Completo</label>
+                        <input type="text" id="endereco" name="endereco" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Confirmar e Pagar</button>
+                </form>
+            </div>
+            <div class="order-summary">
+                <h2>Resumo do Pedido</h2>
+                <% carrinho.forEach(item => { %>
+                    <div class="summary-item">
+                        <span><%= item.quantidade %>x <%= item.nome %></span>
+                        <span>R$ <%=(item.preco * item.quantidade).toFixed(2).replace('.',',')%></span>
+                    </div>
+                <% }); %>
+                <div class="summary-item summary-total">
+                    <span>Total</span>
+                    <span>R$ <%= total.toFixed(2).replace('.',',') %></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

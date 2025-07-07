@@ -15,18 +15,16 @@
     <header class="topo">
       <div class="container">
         <a href="/" class="logo">Alcool.bet</a>
-        <div class="busca">
-          <input type="text" placeholder="Buscar bebidas..." />
-          <button class="btn-busca">Buscar</button>
-        </div>
+
+        <form action="/pesquisar" method="GET" class="busca">
+          <input type="text" name="termo" placeholder="Buscar bebidas..." required />
+          <button type="submit" class="btn-busca">Buscar</button>
+        </form>
+
         <nav class="nav-top">
-          <a href="/promocoes" class="nav-btn">Promoções</a>
           <a href="/carrinho" class="nav-btn">Carrinho</a>
           <% if (locals.isLoggedIn) { %>
             <a href="/pedidos" class="nav-btn">Meus Pedidos</a>
-            <% if (locals.isAdmin) { %>
-              <a href="/admin/dashboard" class="nav-btn admin-link">Painel Admin</a>
-            <% } %>
             <a href="/usuario/<%= locals.userId %>" class="nav-btn conta" title="Minha Conta">
               <img src="/imagens/user.png" alt="Minha Conta" class="icone-login" />
             </a>

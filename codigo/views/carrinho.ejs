@@ -79,40 +79,39 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Seleciona todos os grupos de quantidade
-    const todosOsItens = document.querySelectorAll('.cart-item');
+    // Função para atualizar os totais na tela
+    function atualizarTotais(subtotal, total) {
+        document.getElementById('subtotal-carrinho').innerText = `R$ ${parseFloat(subtotal).toFixed(2).replace('.', ',')}`;
+        document.getElementById('total-carrinho').innerText = `R$ ${parseFloat(total).toFixed(2).replace('.', ',')}`;
+    }
 
-    todosOsItens.forEach(item => {
-        const input = item.querySelector('.input-quantidade');
-        const btnPlus = item.querySelector('.btn-plus');
-        const btnMinus = item.querySelector('.btn-minus');
-        const maxEstoque = parseInt(input.max, 10);
+    // --- LÓGICA PARA REMOVER ITENS ---
+    document.querySelectorAll('.remove-btn').forEach(botao => {
+        botao.addEventListener('click', async (e) => {
+            const produtoId = e.target.dataset.id;
+            
+            const response = await fetch(`/carrinho/remover/${produtoId}`, { method: 'POST' });
+            const data = await response.json();
 
-        btnPlus.addEventListener('click', () => {
-            let valor = parseInt(input.value, 10);
-            if (valor < maxEstoque) {
-                input.value = valor + 1;
-                // Dispara o evento 'change' para salvar a alteração no backend
-                input.dispatchEvent(new Event('change'));
-            }
-        });
-
-        btnMinus.addEventListener('click', () => {
-            let valor = parseInt(input.value, 10);
-            if (valor > 1) {
-                input.value = valor - 1;
-                input.dispatchEvent(new Event('change'));
+            if (data.success) {
+                e.target.closest('.cart-item').remove(); // Remove o item da tela
+                atualizarTotais(data.novoSubtotal, data.novoTotal); // Atualiza os totais
+                if (data.carrinhoVazio) {
+                    window.location.reload(); // Recarrega para mostrar a msg de carrinho vazio
+                }
+            } else {
+                alert('Erro ao remover o item.');
             }
         });
     });
 
-    // Adiciona o evento de 'change' para cada input de QUANTIDADE
-    inputsQuantidade.forEach(input => {
-        input.addEventListener('change', async (e) => {
+    // --- LÓGICA PARA ATUALIZAR QUANTIDADE ---
+    document.querySelectorAll('.item-quantity input').forEach(input => {
+        // Esta função será chamada sempre que a quantidade mudar
+        const atualizarQuantidade = async (e) => {
             const produtoId = e.target.dataset.id;
             const quantidade = e.target.value;
-            
-            // Envia a requisição para a rota de atualização
+
             const response = await fetch(`/carrinho/atualizar/${produtoId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -121,15 +120,42 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.success) {
-                // Encontra o elemento do subtotal do item e o atualiza
                 const subtotalItemEl = e.target.closest('.cart-item').querySelector('.item-subtotal');
                 subtotalItemEl.innerText = `R$ ${parseFloat(data.novoSubtotalItem).toFixed(2).replace('.', ',')}`;
-                
-                // Atualiza os totais na tela
-                document.getElementById('subtotal-carrinho').innerText = `R$ ${parseFloat(data.novoSubtotal).toFixed(2).replace('.', ',')}`;
-                document.getElementById('total-carrinho').innerText = `R$ ${parseFloat(data.novoTotal).toFixed(2).replace('.', ',')}`;
+                atualizarTotais(data.novoSubtotal, data.novoTotal);
+            } else {
+                alert(data.message); // Mostra a mensagem de erro de estoque
+                window.location.reload(); // Recarrega para reverter a quantidade
             }
-        });
+        };
+
+        // Adiciona o evento de 'change'
+        input.addEventListener('change', atualizarQuantidade);
+    });
+
+    // --- LÓGICA PARA OS BOTÕES +/- ---
+    document.querySelectorAll('.cart-item').forEach(item => {
+        const input = item.querySelector('.input-quantidade');
+        const btnPlus = item.querySelector('.btn-plus');
+        const btnMinus = item.querySelector('.btn-minus');
+        
+        if(input && btnPlus && btnMinus) {
+            const maxEstoque = parseInt(input.max, 10);
+            
+            btnPlus.addEventListener('click', () => {
+                if (parseInt(input.value) < maxEstoque) {
+                    input.value = parseInt(input.value) + 1;
+                    input.dispatchEvent(new Event('change')); // Dispara o evento de atualização
+                }
+            });
+
+            btnMinus.addEventListener('click', () => {
+                if (parseInt(input.value) > 1) {
+                    input.value = parseInt(input.value) - 1;
+                    input.dispatchEvent(new Event('change')); // Dispara o evento de atualização
+                }
+            });
+        }
     });
 });
 </script>
