@@ -8,8 +8,7 @@ const sequelize = new Sequelize(
   process.env.DB_PASS,    
   {
     host: process.env.DB_HOST, 
-    dialect: DB_DIALECT=mysql
-
+    dialect: process.env.DB_DIALECT 
   }
 );
 
